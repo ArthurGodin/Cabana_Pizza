@@ -10,7 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 from app.models.enums import FulfillmentType, OrderChannel, OrderStatus, PaymentMethod
 
 MoneyField = Annotated[Decimal, Field(ge=0, max_digits=10, decimal_places=2)]
-PositiveQuantityField = Annotated[int, Field(ge=1)]
+PositiveQuantityField = Annotated[int, Field(ge=1, le=20)]
 
 
 class OrderEdgeInput(BaseModel):
@@ -38,7 +38,7 @@ class OrderFulfillmentInput(BaseModel):
     city: str | None = Field(default=None, max_length=80)
     state: str | None = Field(default=None, max_length=8)
     complement: str | None = Field(default=None, max_length=120)
-    reference: str | None = None
+    reference: str | None = Field(default=None, max_length=160)
 
     model_config = ConfigDict(populate_by_name=True)
 
@@ -74,7 +74,7 @@ class OrderItemInput(BaseModel):
     name: str = Field(min_length=1, max_length=140)
     size: str = Field(min_length=1, max_length=120)
     edge: OrderEdgeInput | None = None
-    note: str | None = None
+    note: str | None = Field(default=None, max_length=180)
     unit_price: MoneyField = Field(alias="unitPrice")
     qty: PositiveQuantityField
     line_total: MoneyField = Field(alias="lineTotal")
@@ -104,9 +104,9 @@ class OrderCreateInput(BaseModel):
     customer: OrderCustomerInput
     fulfillment: OrderFulfillmentInput
     payment: OrderPaymentInput
-    items: list[OrderItemInput] = Field(min_length=1)
+    items: list[OrderItemInput] = Field(min_length=1, max_length=40)
     summary: OrderSummaryInput | None = None
-    notes: str | None = None
+    notes: str | None = Field(default=None, max_length=260)
 
     model_config = ConfigDict(populate_by_name=True)
 

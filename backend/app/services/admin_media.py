@@ -31,9 +31,7 @@ def store_product_image(
     file: UploadFile,
     settings: Settings,
 ) -> AdminMediaUploadResponse:
-    extension = ALLOWED_IMAGE_CONTENT_TYPES.get(file.content_type or "")
-
-    if extension is None:
+    if (file.content_type or "") not in ALLOWED_IMAGE_CONTENT_TYPES:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Formato de imagem nao suportado. Use JPG, PNG ou WEBP.",
@@ -55,10 +53,17 @@ def store_product_image(
             detail=f"Imagem excede o limite de {settings.media_max_upload_mb} MB.",
         )
 
+    detected_extension = detect_image_extension(content)
+    if detected_extension is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Arquivo invalido. Envie uma imagem JPG, PNG ou WEBP real.",
+        )
+
     products_dir = settings.media_root_path / "products"
     products_dir.mkdir(parents=True, exist_ok=True)
 
-    file_name = f"{secrets.token_hex(12)}{extension}"
+    file_name = f"{secrets.token_hex(12)}{detected_extension}"
     saved_path = products_dir / file_name
     saved_path.write_bytes(content)
 
@@ -178,3 +183,16 @@ def normalize_file_name(file_name: str) -> str:
 
 def build_media_path(settings: Settings, file_name: str) -> str:
     return f"{settings.media_url_prefix.rstrip('/')}/products/{file_name}"
+
+
+def detect_image_extension(content: bytes) -> str | None:
+    if content.startswith(b"\xff\xd8\xff"):
+        return ".jpg"
+
+    if content.startswith(b"\x89PNG\r\n\x1a\n"):
+        return ".png"
+
+    if len(content) >= 12 and content[:4] == b"RIFF" and content[8:12] == b"WEBP":
+        return ".webp"
+
+    return None

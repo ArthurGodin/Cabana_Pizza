@@ -75,6 +75,26 @@ class Settings(BaseSettings):
     def media_root_path(self) -> Path:
         return Path(self.media_root).resolve()
 
+    def validate_runtime_security(self) -> None:
+        if self.app_env.lower() != "production":
+            return
+
+        weak_secret_markers = (
+            "change-this",
+            "dev-only",
+            "troque",
+            "uma-chave-grande",
+        )
+        normalized_secret = self.auth_secret_key.strip().lower()
+
+        if len(self.auth_secret_key.strip()) < 48 or any(marker in normalized_secret for marker in weak_secret_markers):
+            raise RuntimeError(
+                "AUTH_SECRET_KEY insegura para producao. Defina uma chave aleatoria com pelo menos 48 caracteres."
+            )
+
+        if "*" in self.cors_origins_list:
+            raise RuntimeError("CORS_ORIGINS nao pode usar wildcard em producao.")
+
 
 @lru_cache
 def get_settings() -> Settings:

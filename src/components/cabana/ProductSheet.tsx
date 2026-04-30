@@ -132,13 +132,9 @@ export function ProductSheet({ product, cartItem = null, onClose }: Props) {
           animate={{ y: 0 }}
           exit={{ y: "100%" }}
           transition={{ type: "spring", stiffness: 320, damping: 34 }}
-          drag="y"
-          dragConstraints={{ top: 0, bottom: 0 }}
-          dragElastic={{ top: 0, bottom: 0.4 }}
-          onDragEnd={(_, info) => info.offset.y > 120 && onClose()}
-          className="fixed inset-x-0 bottom-0 z-[70] max-h-[94svh] overflow-y-auto rounded-t-[2rem] bg-surface-elevated shadow-sheet"
+          className="fixed inset-x-0 bottom-0 z-[70] flex h-[calc(100svh-0.75rem)] max-h-[780px] flex-col overflow-hidden rounded-t-[2rem] bg-surface-elevated shadow-sheet sm:left-1/2 sm:max-w-2xl sm:-translate-x-1/2"
         >
-          <div className="sticky top-0 z-10 flex justify-center bg-gradient-to-b from-surface-elevated to-surface-elevated/95 pb-2 pt-3">
+          <div className="flex shrink-0 justify-center bg-gradient-to-b from-surface-elevated to-surface-elevated/95 pb-2 pt-3">
             <span className="h-1.5 w-10 rounded-full bg-border" />
           </div>
 
@@ -150,13 +146,15 @@ export function ProductSheet({ product, cartItem = null, onClose }: Props) {
             <X className="h-4 w-4" />
           </button>
 
-          <div className="px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] sm:px-6">
+          <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-4 [-webkit-overflow-scrolling:touch] [touch-action:pan-y] sm:px-6">
             <div className="flex flex-col gap-4 min-[390px]:flex-row min-[390px]:items-start">
               <img
                 src={product.image}
                 alt={product.name}
                 width={120}
                 height={120}
+                loading="eager"
+                decoding="async"
                 className="h-28 w-full rounded-2xl object-cover shadow-card-soft min-[390px]:h-24 min-[390px]:w-24 md:h-28 md:w-28"
               />
 
@@ -292,17 +290,17 @@ export function ProductSheet({ product, cartItem = null, onClose }: Props) {
                 className="w-full resize-none rounded-2xl border border-border bg-surface px-4 py-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/80 focus:border-primary"
               />
             </Section>
+          </div>
 
-            <div className="sticky bottom-0 -mx-4 mt-6 border-t border-border bg-surface-elevated/95 px-4 py-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] backdrop-blur sm:-mx-6 sm:px-6">
-              <motion.button
-                onClick={handleSubmit}
-                whileTap={{ scale: 0.97 }}
-                className="flex h-14 w-full items-center justify-between rounded-full bg-primary-gradient px-6 font-semibold text-primary-foreground shadow-elegant transition-shadow hover:shadow-glow"
-              >
-                <span>{cartItem ? "Atualizar item" : "Adicionar ao carrinho"}</span>
-                <span className="font-display text-lg">{formatBRL(total)}</span>
-              </motion.button>
-            </div>
+          <div className="shrink-0 border-t border-border bg-surface-elevated/95 px-4 py-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] backdrop-blur sm:px-6">
+            <motion.button
+              onClick={handleSubmit}
+              whileTap={{ scale: 0.97 }}
+              className="flex h-14 w-full items-center justify-between rounded-full bg-primary-gradient px-6 font-semibold text-primary-foreground shadow-elegant transition-shadow hover:shadow-glow"
+            >
+              <span>{cartItem ? "Atualizar item" : "Adicionar ao carrinho"}</span>
+              <span className="font-display text-lg">{formatBRL(total)}</span>
+            </motion.button>
           </div>
         </motion.div>
       </>

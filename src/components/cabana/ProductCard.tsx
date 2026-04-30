@@ -13,12 +13,7 @@ export function ProductCard({ product, onAdd }: Props) {
     product.isDrink && product.variants && product.variants.length === 1 ? "Preço" : "A partir de";
 
   return (
-    <motion.article
-      layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
+    <article
       className="group relative mx-auto flex h-full w-full max-w-[210px] flex-col overflow-hidden rounded-[1.15rem] border border-border/60 bg-card-gradient shadow-card-soft transition-all duration-500 hover:shadow-elegant sm:max-w-[240px] sm:rounded-3xl md:max-w-[260px] lg:max-w-[280px] xl:max-w-[290px] 2xl:max-w-[300px]"
     >
       <div className="relative aspect-square shrink-0 overflow-hidden">
@@ -26,6 +21,7 @@ export function ProductCard({ product, onAdd }: Props) {
           src={product.image}
           alt={product.name}
           loading="lazy"
+          decoding="async"
           width={768}
           height={768}
           className="h-full w-full object-cover transition-transform duration-700 ease-spring group-hover:scale-110"
@@ -69,6 +65,6 @@ export function ProductCard({ product, onAdd }: Props) {
           </motion.button>
         </div>
       </div>
-    </motion.article>
+    </article>
   );
 }

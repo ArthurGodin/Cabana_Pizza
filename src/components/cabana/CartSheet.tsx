@@ -307,7 +307,7 @@ export function CartSheet({ open, onEditItem, onClose }: Props) {
               </button>
             </header>
 
-            <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-6">
+            <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 [-webkit-overflow-scrolling:touch] [touch-action:pan-y] sm:px-6">
               {submittedOrder ? (
                 <OrderSuccessState order={submittedOrder} />
               ) : items.length === 0 ? (

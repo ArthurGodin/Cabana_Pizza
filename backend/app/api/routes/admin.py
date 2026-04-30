@@ -5,6 +5,7 @@ from datetime import date
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from sqlalchemy.orm import Session
 
+from app.core.rate_limit import rate_limit
 from app.db.session import get_db
 from app.dependencies.auth import get_current_admin
 from app.models.admin_user import AdminUser
@@ -60,7 +61,11 @@ from app.core.config import get_settings
 router = APIRouter(prefix="/admin")
 
 
-@router.post("/login", response_model=AdminLoginResponse)
+@router.post(
+    "/login",
+    response_model=AdminLoginResponse,
+    dependencies=[Depends(rate_limit("admin_login", limit=5, window_seconds=60))],
+)
 def login_admin_endpoint(payload: AdminLoginInput, db: Session = Depends(get_db)) -> AdminLoginResponse:
     try:
         return login_admin(db, payload)
