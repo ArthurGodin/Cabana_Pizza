@@ -1,0 +1,615 @@
+﻿{
+  "brand": {
+    "name": "Cabana da Pizza",
+    "city": "Timon",
+    "state": "MA",
+    "menuYear": 2025,
+    "whatsappNumber": "5586994780814"
+  },
+  "sizes": [
+    { "key": "M", "label": "Média", "slices": "6 fatias" },
+    { "key": "G", "label": "Grande", "slices": "8 fatias" },
+    { "key": "GG", "label": "Família", "slices": "10 fatias" }
+  ],
+  "edges": [
+    { "id": "none", "name": "Sem borda recheada", "description": "Borda tradicional crocante." },
+    { "id": "original", "name": "Original", "description": "Recheio tradicional." },
+    { "id": "cream-cheese", "name": "Cream Cheese", "description": "Mais cremosa e suave." },
+    { "id": "chocolate", "name": "Chocolate", "description": "Indicada para pizzas doces." }
+  ],
+  "edgePriceBySize": {
+    "M": 10,
+    "G": 12,
+    "GG": 15
+  },
+  "deliveryNeighborhoods": [
+    "Centro",
+    "Cidade Nova",
+    "Parque Piauí I",
+    "Parque Piauí II",
+    "Parque Alvorada",
+    "Parque São Francisco",
+    "Parque São Francisco II",
+    "Parque União",
+    "Boa Vista",
+    "Conjunto Boa Vista",
+    "Coheb",
+    "Formosa",
+    "Planalto Formosa",
+    "Flores",
+    "Reserva das Flores",
+    "Guarita",
+    "Mateuzinho",
+    "Parque Aliança",
+    "Pedro Patrício",
+    "Mutirão",
+    "Centro Operário",
+    "Loteamento Boa Vista",
+    "Novo Joia"
+  ],
+  "categories": [
+    {
+      "id": "tradicional",
+      "label": "Tradicional",
+      "kind": "pizza",
+      "prices": { "M": 42, "G": 48, "GG": 56 },
+      "items": [
+        {
+          "id": "atum",
+          "name": "Atum",
+          "description": "Molho, Mussarela, Atum, Cebola, Azeitona e Orégano.",
+          "imageKey": "mussarela"
+        },
+        {
+          "id": "bacon",
+          "name": "Bacon",
+          "description": "Molho, Mussarela, Bacon, Azeitona e Orégano.",
+          "imageKey": "bacon",
+          "popular": true,
+          "badge": "Destaque"
+        },
+        {
+          "id": "baiana",
+          "name": "Baiana",
+          "description": "Molho, Mussarela, Calabresa ralada, Pimenta Calabresa, Azeitona e Orégano.",
+          "imageKey": "baiana"
+        },
+        {
+          "id": "bauru",
+          "name": "Bauru",
+          "description": "Molho, Presunto, Tomate, Mussarela, Azeitona e Orégano.",
+          "imageKey": "mussarela"
+        },
+        {
+          "id": "calabresa",
+          "name": "Calabresa",
+          "description": "Molho, Mussarela, Calabresa, Cebola, Azeitona e Orégano.",
+          "imageKey": "calabresa",
+          "popular": true,
+          "badge": "Da casa"
+        },
+        {
+          "id": "cheddar",
+          "name": "Cheddar",
+          "description": "Molho, Mussarela, Cheddar, Palmito, Azeitona e Orégano.",
+          "imageKey": "mussarela"
+        },
+        {
+          "id": "dois-queijos",
+          "name": "Dois Queijos",
+          "description": "Molho, Mussarela, Catupiry, Azeitona e Orégano.",
+          "imageKey": "mussarela"
+        },
+        {
+          "id": "margherita",
+          "name": "Margherita",
+          "description": "Molho, Mussarela, Fatia de Tomate, Parmesão, Azeitona e Orégano.",
+          "imageKey": "margherita",
+          "popular": true,
+          "badge": "Clássica"
+        },
+        {
+          "id": "mussarela",
+          "name": "Mussarela",
+          "description": "Molho, Mussarela, Azeitona e Orégano.",
+          "imageKey": "mussarela"
+        }
+      ]
+    },
+    {
+      "id": "especial",
+      "label": "Especial",
+      "kind": "pizza",
+      "prices": { "M": 46, "G": 52, "GG": 60 },
+      "items": [
+        {
+          "id": "alpina",
+          "name": "Alpina",
+          "description": "Molho, Mussarela, Palmito, Bacon, Provolone, Azeitona e Orégano.",
+          "imageKey": "bacon"
+        },
+        {
+          "id": "balacubana",
+          "name": "Balacubana",
+          "description": "Molho, Presunto, Frango, Bacon, Mussarela, Azeitona e Orégano.",
+          "imageKey": "frango-bacon"
+        },
+        {
+          "id": "baianinha",
+          "name": "Baianinha",
+          "description": "Molho, Mussarela, Calabresa ralada, Ovos, Cebola, Pimenta Calabresa, Azeitona e Orégano.",
+          "imageKey": "baiana"
+        },
+        {
+          "id": "calabresa-com-cream-cheese",
+          "name": "Calabresa com Cream Cheese",
+          "description": "Molho, Mussarela, Calabresa, Cream Cheese, Cebola, Azeitona e Orégano.",
+          "imageKey": "calabresa"
+        },
+        {
+          "id": "caipira",
+          "name": "Caipira",
+          "description": "Molho, Frango Desfiado, Mussarela, Milho Verde, Catupiry, Azeitona e Orégano.",
+          "imageKey": "frango-catupiry"
+        },
+        {
+          "id": "frango-ii",
+          "name": "Frango II",
+          "description": "Molho, Frango, Cebola, Presunto, Ervilha, Mussarela, Azeitona e Orégano.",
+          "imageKey": "frango-catupiry"
+        },
+        {
+          "id": "frango-e-bacon",
+          "name": "Frango e Bacon",
+          "description": "Molho, Mussarela, Frango, Bacon, Azeitona e Orégano.",
+          "imageKey": "frango-bacon",
+          "popular": true,
+          "badge": "Mais pedido"
+        },
+        {
+          "id": "frango-com-catupiry",
+          "name": "Frango com Catupiry",
+          "description": "Molho, Mussarela, Frango, Catupiry, Azeitona e Orégano.",
+          "imageKey": "frango-catupiry",
+          "popular": true,
+          "badge": "Favorita"
+        },
+        {
+          "id": "frango-cheddar",
+          "name": "Frango Cheddar",
+          "description": "Molho, Mussarela, Frango, Cheddar, Azeitona e Orégano.",
+          "imageKey": "frango-catupiry"
+        },
+        {
+          "id": "frango-com-abacaxi",
+          "name": "Frango com Abacaxi",
+          "description": "Molho, Mussarela, Frango, Abacaxi, Creme de Leite, Azeitona e Orégano.",
+          "imageKey": "frango-catupiry"
+        },
+        {
+          "id": "italiana",
+          "name": "Italiana",
+          "description": "Molho, Mussarela, Salame, Tomate, Azeitona e Orégano.",
+          "imageKey": "pepperoni"
+        },
+        {
+          "id": "mexicana",
+          "name": "Mexicana",
+          "description": "Molho, Presunto, Mussarela, Milho, Bacon, Pimenta, Cebola, Azeitona e Orégano.",
+          "imageKey": "bacon"
+        },
+        {
+          "id": "moda-da-cabana",
+          "name": "Moda da Cabana",
+          "description": "Molho, Mussarela, Bacon, Tomate, Cebola, Milho, Azeitona e Orégano.",
+          "imageKey": "bacon"
+        },
+        {
+          "id": "moda-da-casa",
+          "name": "Moda da Casa",
+          "description": "Molho, Mussarela, Presunto, Milho, Cebola, Bacon, Azeitona e Orégano.",
+          "imageKey": "portuguesa"
+        },
+        {
+          "id": "pepperoni",
+          "name": "Pepperoni",
+          "description": "Molho, Mussarela, Pepperoni, Azeitona e Orégano.",
+          "imageKey": "pepperoni"
+        },
+        {
+          "id": "portuguesa",
+          "name": "Portuguesa",
+          "description": "Molho, Presunto, Cebola, Ovo, Mussarela, Azeitona e Orégano.",
+          "imageKey": "portuguesa",
+          "popular": true,
+          "badge": "Tradicional"
+        },
+        {
+          "id": "siciliana",
+          "name": "Siciliana",
+          "description": "Molho, Mussarela, Champignon, Bacon, Azeitona e Orégano.",
+          "imageKey": "bacon"
+        },
+        {
+          "id": "tropical",
+          "name": "Tropical",
+          "description": "Molho, Mussarela, Figo, Cereja, Abacaxi e Ameixa.",
+          "imageKey": "banana"
+        },
+        {
+          "id": "tres-queijos",
+          "name": "Três Queijos",
+          "description": "Molho, Mussarela, Catupiry, Parmesão, Azeitona e Orégano.",
+          "imageKey": "quatro-queijos"
+        },
+        {
+          "id": "brocolis-com-bacon",
+          "name": "Brócolis com Bacon",
+          "description": "Molho, Mussarela, Brócolis, Bacon, Azeitona e Orégano.",
+          "imageKey": "bacon"
+        }
+      ]
+    },
+    {
+      "id": "premium",
+      "label": "Premium",
+      "kind": "pizza",
+      "prices": { "M": 50, "G": 56, "GG": 66 },
+      "items": [
+        {
+          "id": "carne-seca-com-banana",
+          "name": "Carne Seca com Banana",
+          "description": "Molho, Mussarela, Carne Seca, Cebola, Banana, Azeitona e Orégano.",
+          "imageKey": "carne-seca"
+        },
+        {
+          "id": "carne-seca-com-champignon",
+          "name": "Carne Seca com Champignon",
+          "description": "Molho, Mussarela, Carne Seca, Cebola, Champignon, Azeitona e Orégano.",
+          "imageKey": "carne-seca"
+        },
+        {
+          "id": "carne-seca-suprema",
+          "name": "Carne Seca Suprema",
+          "description": "Molho, Mussarela, Carne Seca, Cebola, Bacon, Catupiry, Azeitona e Orégano.",
+          "imageKey": "carne-seca",
+          "popular": true,
+          "badge": "Assinatura"
+        },
+        {
+          "id": "delicia",
+          "name": "Delícia",
+          "description": "Molho, Mussarela, Frango Desfiado, Champignon, Catupiry, Parmesão, Palmito, Azeitona e Orégano.",
+          "imageKey": "frango-catupiry"
+        },
+        {
+          "id": "grega",
+          "name": "Grega",
+          "description": "Molho, Mussarela, Ovo, Frango, Bacon, Presunto e Catupiry.",
+          "imageKey": "portuguesa"
+        },
+        {
+          "id": "margherita-especial",
+          "name": "Margherita Especial",
+          "description": "Molho, Mussarela, Tomate, Salame, Pepperoni, Azeitona, Manjericão e Orégano.",
+          "imageKey": "burrata"
+        },
+        {
+          "id": "mista",
+          "name": "Mista",
+          "description": "Molho, Mussarela, Frango, Presunto, Tomate, Calabresa, Azeitona e Orégano.",
+          "imageKey": "portuguesa"
+        },
+        {
+          "id": "moda-da-casa-suprema",
+          "name": "Moda da Casa Suprema",
+          "description": "Molho, Mussarela, Frango, Bacon, Calabresa, Catupiry, Orégano e Azeitona.",
+          "imageKey": "frango-bacon"
+        },
+        {
+          "id": "moda-do-pizzaiolo",
+          "name": "Moda do Pizzaiolo",
+          "description": "Molho, Mussarela, Presunto, Milho, Cebola, Bacon, Catupiry, Azeitona e Orégano.",
+          "imageKey": "portuguesa"
+        },
+        {
+          "id": "portuguesa-especial",
+          "name": "Portuguesa Especial",
+          "description": "Molho, Presunto, Ovo, Cebola, Palmito, Ervilha, Mussarela, Azeitona e Orégano.",
+          "imageKey": "portuguesa"
+        },
+        {
+          "id": "portuguesinha",
+          "name": "Portuguesinha",
+          "description": "Molho, Presunto, Milho, Ovo, Cebola, Tomate, Mussarela, Calabresa, Bacon, Azeitona e Orégano.",
+          "imageKey": "portuguesa"
+        },
+        {
+          "id": "quatro-queijos",
+          "name": "Quatro Queijos",
+          "description": "Molho, Mussarela, Catupiry, Provolone, Parmesão, Azeitona e Orégano.",
+          "imageKey": "quatro-queijos",
+          "popular": true,
+          "badge": "Premium"
+        },
+        {
+          "id": "requinte",
+          "name": "Requinte",
+          "description": "Molho, Mussarela, Frango Desfiado, Catupiry, Bacon, Milho, Cebola, Azeitona e Orégano.",
+          "imageKey": "truffle",
+          "popular": true,
+          "badge": "Da casa"
+        }
+      ]
+    },
+    {
+      "id": "doce",
+      "label": "Doce",
+      "kind": "pizza",
+      "prices": { "M": 46, "G": 52, "GG": 60 },
+      "items": [
+        {
+          "id": "banana-nevada",
+          "name": "Banana Nevada",
+          "description": "Creme de Leite, Banana, Chocolate Branco, Açúcar e Canela.",
+          "imageKey": "banana-nevada",
+          "popular": true,
+          "badge": "Sobremesa"
+        },
+        {
+          "id": "chocolate-mesclado",
+          "name": "Chocolate Mesclado",
+          "description": "Creme de Leite, Chocolate ao Leite e Chocolate Branco.",
+          "imageKey": "chocolate"
+        },
+        {
+          "id": "tres-desejos",
+          "name": "Três Desejos",
+          "description": "Creme de Leite, Chocolate ao Leite, Doce de Leite e Chocolate Branco.",
+          "imageKey": "chocolate"
+        },
+        {
+          "id": "romeu-e-julieta",
+          "name": "Romeu e Julieta",
+          "description": "Molho, Mussarela, Goiabada e Catupiry.",
+          "imageKey": "romeu-julieta",
+          "popular": true,
+          "badge": "Clássica"
+        },
+        {
+          "id": "banana-com-mussarela",
+          "name": "Banana com Mussarela",
+          "description": "Molho, Banana, Leite Condensado, Mussarela e Canela.",
+          "imageKey": "banana"
+        }
+      ]
+    },
+    {
+      "id": "bebidas",
+      "label": "Bebidas",
+      "kind": "drink",
+      "groups": [
+        {
+          "name": "Refrigerantes",
+          "items": [
+            {
+              "id": "coca-cola",
+              "name": "Coca-Cola",
+              "imageKey": "drink-coca",
+              "variants": [
+                { "id": "lata", "label": "Lata", "price": 7 },
+                { "id": "1-lt", "label": "1 LT", "price": 12 },
+                { "id": "2-lt", "label": "2 LT", "price": 16 },
+                { "id": "zero-1-lt", "label": "Zero 1 LT", "price": 12 }
+              ]
+            },
+            {
+              "id": "guarana-jesus",
+              "name": "Guaraná Jesus",
+              "imageKey": "drink-cola",
+              "variants": [
+                { "id": "lata", "label": "Lata", "price": 7 },
+                { "id": "1-lt", "label": "1 LT", "price": 12 },
+                { "id": "2-lt", "label": "2 LT", "price": 16 }
+              ]
+            },
+            {
+              "id": "fanta-laranja",
+              "name": "Fanta Laranja",
+              "imageKey": "drink-cola",
+              "variants": [
+                { "id": "lata", "label": "Lata", "price": 6 },
+                { "id": "1-lt", "label": "1 LT", "price": 10 },
+                { "id": "2-lt", "label": "2 LT", "price": 15 }
+              ]
+            },
+            {
+              "id": "guarana",
+              "name": "Guaraná",
+              "imageKey": "drink-cola",
+              "variants": [
+                { "id": "lata", "label": "Lata", "price": 6 },
+                { "id": "1-lt", "label": "1 LT", "price": 9 },
+                { "id": "2-lt", "label": "2 LT", "price": 13 }
+              ]
+            },
+            {
+              "id": "fanta-uva",
+              "name": "Fanta Uva",
+              "imageKey": "drink-cola",
+              "variants": [
+                { "id": "lata", "label": "Lata", "price": 6 },
+                { "id": "2-lt", "label": "2 LT", "price": 15 }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Cervejas",
+          "items": [
+            {
+              "id": "heineken",
+              "name": "Heineken",
+              "imageKey": "drink-heineken",
+              "variants": [{ "id": "unit", "label": "Unidade", "price": 16 }]
+            },
+            {
+              "id": "stella",
+              "name": "Stella",
+              "imageKey": "drink-heineken",
+              "variants": [{ "id": "unit", "label": "Unidade", "price": 15 }]
+            },
+            {
+              "id": "spaten",
+              "name": "Spaten",
+              "imageKey": "drink-heineken",
+              "variants": [{ "id": "unit", "label": "Unidade", "price": 14 }]
+            },
+            {
+              "id": "brahma-duplo-malte",
+              "name": "Brahma Duplo Malte",
+              "imageKey": "drink-heineken",
+              "variants": [{ "id": "unit", "label": "Unidade", "price": 11 }]
+            },
+            {
+              "id": "skol-puro-malte",
+              "name": "Skol Puro Malte",
+              "imageKey": "drink-heineken",
+              "variants": [{ "id": "unit", "label": "Unidade", "price": 11 }]
+            },
+            {
+              "id": "bohemia",
+              "name": "Bohemia",
+              "imageKey": "drink-heineken",
+              "variants": [{ "id": "unit", "label": "Unidade", "price": 10 }]
+            },
+            {
+              "id": "skol",
+              "name": "Skol",
+              "imageKey": "drink-heineken",
+              "variants": [{ "id": "unit", "label": "Unidade", "price": 10 }]
+            },
+            {
+              "id": "brahma",
+              "name": "Brahma",
+              "imageKey": "drink-heineken",
+              "variants": [{ "id": "unit", "label": "Unidade", "price": 10 }]
+            }
+          ]
+        },
+        {
+          "name": "Sucos",
+          "items": [
+            {
+              "id": "bacuri",
+              "name": "Suco de Bacuri",
+              "imageKey": "drink-suco",
+              "variants": [
+                { "id": "sem-leite", "label": "Sem leite", "price": 8 },
+                { "id": "com-leite", "label": "Com leite", "price": 9 }
+              ]
+            },
+            {
+              "id": "cupuacu",
+              "name": "Suco de Cupuaçu",
+              "imageKey": "drink-suco",
+              "variants": [
+                { "id": "sem-leite", "label": "Sem leite", "price": 8 },
+                { "id": "com-leite", "label": "Com leite", "price": 9 }
+              ]
+            },
+            {
+              "id": "maracuja",
+              "name": "Suco de Maracujá",
+              "imageKey": "drink-suco",
+              "variants": [
+                { "id": "sem-leite", "label": "Sem leite", "price": 8 },
+                { "id": "com-leite", "label": "Com leite", "price": 9 }
+              ]
+            },
+            {
+              "id": "morango",
+              "name": "Suco de Morango",
+              "imageKey": "drink-suco",
+              "variants": [
+                { "id": "sem-leite", "label": "Sem leite", "price": 8 },
+                { "id": "com-leite", "label": "Com leite", "price": 9 }
+              ]
+            },
+            {
+              "id": "abacaxi-com-hortela",
+              "name": "Suco de Abacaxi c/ Hortelã",
+              "imageKey": "drink-lemonade",
+              "variants": [
+                { "id": "sem-leite", "label": "Sem leite", "price": 6 },
+                { "id": "com-leite", "label": "Com leite", "price": 7 }
+              ]
+            },
+            {
+              "id": "acerola",
+              "name": "Suco de Acerola",
+              "imageKey": "drink-suco",
+              "variants": [
+                { "id": "sem-leite", "label": "Sem leite", "price": 6 },
+                { "id": "com-leite", "label": "Com leite", "price": 7 }
+              ]
+            },
+            {
+              "id": "caja",
+              "name": "Suco de Cajá",
+              "imageKey": "drink-suco",
+              "variants": [
+                { "id": "sem-leite", "label": "Sem leite", "price": 6 },
+                { "id": "com-leite", "label": "Com leite", "price": 7 }
+              ]
+            },
+            {
+              "id": "caju",
+              "name": "Suco de Caju",
+              "imageKey": "drink-suco",
+              "variants": [
+                { "id": "sem-leite", "label": "Sem leite", "price": 6 },
+                { "id": "com-leite", "label": "Com leite", "price": 7 }
+              ]
+            },
+            {
+              "id": "goiaba",
+              "name": "Suco de Goiaba",
+              "imageKey": "drink-suco",
+              "variants": [
+                { "id": "sem-leite", "label": "Sem leite", "price": 5 },
+                { "id": "com-leite", "label": "Com leite", "price": 6 }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Outros",
+          "items": [
+            {
+              "id": "cajuina",
+              "name": "Cajuína",
+              "imageKey": "drink-cola",
+              "variants": [{ "id": "unit", "label": "Unidade", "price": 14 }]
+            },
+            {
+              "id": "h2o",
+              "name": "H2O",
+              "imageKey": "drink-lemonade",
+              "variants": [{ "id": "unit", "label": "Unidade", "price": 6 }]
+            },
+            {
+              "id": "agua-mineral",
+              "name": "Água Mineral",
+              "imageKey": "drink-lemonade",
+              "variants": [
+                { "id": "sem-gas", "label": "Sem gás", "price": 3.5 },
+                { "id": "com-gas", "label": "Com gás", "price": 4 }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
