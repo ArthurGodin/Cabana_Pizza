@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import logging
+
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
@@ -7,6 +9,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from app.core.config import get_settings
 
 settings = get_settings()
+logger = logging.getLogger(__name__)
 
 engine = create_engine(
     settings.database_url,
@@ -36,5 +39,6 @@ def check_database_connection() -> bool:
         with engine.connect() as connection:
             connection.execute(text("SELECT 1"))
         return True
-    except SQLAlchemyError:
+    except SQLAlchemyError as exc:
+        logger.exception("Database health check failed: %s", exc.__class__.__name__)
         return False
