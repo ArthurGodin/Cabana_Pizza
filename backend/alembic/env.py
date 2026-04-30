@@ -12,6 +12,7 @@ from app.models import (  # noqa: F401
     Category,
     CrustFlavor,
     CrustPrice,
+    LoyaltyRedemption,
     Order,
     OrderItem,
     PizzaCategoryPrice,

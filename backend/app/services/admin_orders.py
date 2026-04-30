@@ -56,7 +56,7 @@ def get_orders_dashboard(
     date_to: date | None = None,
 ) -> AdminOrdersDashboardResponse:
     query = apply_order_filters(
-        select(Order),
+        select(Order).options(selectinload(Order.items)),
         date_from=date_from,
         date_to=date_to,
     )
@@ -83,6 +83,9 @@ def get_orders_dashboard(
         grossRevenue=gross_revenue,
         completedRevenue=completed_revenue,
         averageTicket=average_ticket,
+        topProducts=build_top_products(orders),
+        topNeighborhoods=build_top_neighborhoods(orders),
+        busyHours=build_busy_hours(orders),
     )
 
 
@@ -296,6 +299,60 @@ def apply_order_filters(
 
 def count_by_status(orders: list[Order], status: OrderStatus) -> int:
     return sum(1 for order in orders if order.status == status)
+
+
+def build_top_products(orders: list[Order]) -> list[dict[str, int | str]]:
+    totals: dict[str, int] = {}
+
+    for order in orders:
+        if order.status == OrderStatus.CANCELLED:
+            continue
+
+        for item in order.items:
+            totals[item.product_name] = totals.get(item.product_name, 0) + item.quantity
+
+    return build_rank_output(totals, limit=5)
+
+
+def build_top_neighborhoods(orders: list[Order]) -> list[dict[str, int | str]]:
+    totals: dict[str, int] = {}
+
+    for order in orders:
+        if order.status == OrderStatus.CANCELLED or order.fulfillment_type != FulfillmentType.DELIVERY:
+            continue
+
+        label = (order.neighborhood or "Bairro nao informado").strip()
+        totals[label] = totals.get(label, 0) + 1
+
+    return build_rank_output(totals, limit=5)
+
+
+def build_busy_hours(orders: list[Order]) -> list[dict[str, int | str]]:
+    totals: dict[str, int] = {}
+
+    for order in orders:
+        if order.status == OrderStatus.CANCELLED:
+            continue
+
+        local_hour = order.created_at.astimezone(SAO_PAULO_TZ).hour
+        label = f"{local_hour:02d}:00"
+        totals[label] = totals.get(label, 0) + 1
+
+    return build_rank_output(totals, limit=5)
+
+
+def build_rank_output(totals: dict[str, int], *, limit: int) -> list[dict[str, int | str]]:
+    ranked_items = sorted(
+        totals.items(),
+        key=lambda item: (-item[1], item[0].lower()),
+    )
+    return [
+        {
+            "label": label,
+            "value": value,
+        }
+        for label, value in ranked_items[:limit]
+    ]
 
 
 def start_of_local_day(value: date) -> datetime:

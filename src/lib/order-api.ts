@@ -9,6 +9,33 @@ export interface OrderApiResponse {
   status: string;
   total: string;
   createdAt: string;
+  loyalty: LoyaltySummary | null;
+}
+
+export interface LoyaltySummary {
+  customerPhone: string;
+  customerName: string | null;
+  qualifyingPizzas: number;
+  redeemedRewards: number;
+  earnedRewards: number;
+  availableRewards: number;
+  progressCount: number;
+  pizzasUntilNextReward: number;
+}
+
+export interface OrderTrackingResponse {
+  publicId: string;
+  status: string;
+  fulfillmentType: "delivery" | "pickup";
+  total: string;
+  createdAt: string;
+  itemCount: number;
+  customerFirstName: string;
+  items: Array<{
+    name: string;
+    quantity: number;
+    option: string | null;
+  }>;
 }
 
 export async function submitOrder(payload: OrderPayload): Promise<OrderApiResponse> {
@@ -48,6 +75,27 @@ export async function submitOrder(payload: OrderPayload): Promise<OrderApiRespon
 
 export function getShortOrderReference(publicId: string) {
   return publicId.slice(0, 8).toUpperCase();
+}
+
+export async function fetchOrderTracking(publicId: string) {
+  const response = await fetch(`${getApiBaseUrl()}/api/orders/${encodeURIComponent(publicId)}/tracking`);
+
+  if (!response.ok) {
+    throw new Error(await readOrderApiError(response));
+  }
+
+  return (await response.json()) as OrderTrackingResponse;
+}
+
+export async function fetchLoyaltySummary(phone: string) {
+  const params = new URLSearchParams({ phone });
+  const response = await fetch(`${getApiBaseUrl()}/api/loyalty?${params.toString()}`);
+
+  if (!response.ok) {
+    throw new Error(await readOrderApiError(response));
+  }
+
+  return (await response.json()) as LoyaltySummary;
 }
 
 function isAbortError(error: unknown) {

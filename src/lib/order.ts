@@ -209,13 +209,14 @@ export function buildOrderPayload(input: {
 export function buildWhatsAppMessage(
   payload: OrderPayload,
   formatCurrency: (value: number) => string,
-  options?: { orderReference?: string | null },
+  options?: { orderReference?: string | null; trackingUrl?: string | null },
 ) {
   const lines = [
     "Ola, Cabana da Pizza.",
     "Segue meu pedido para confirmacao:",
     "",
     ...(options?.orderReference ? [`Protocolo no site: ${options.orderReference}`, ""] : []),
+    ...(options?.trackingUrl ? [`Acompanhar pedido: ${options.trackingUrl}`, ""] : []),
     "*ITENS DO PEDIDO*",
     ...payload.items.flatMap((item, index) => {
       const detailParts = [item.size];

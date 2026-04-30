@@ -111,6 +111,13 @@ class AdminOrderListResponse(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
 
+class AdminDashboardRankItem(BaseModel):
+    label: str
+    value: int
+
+    model_config = ConfigDict(populate_by_name=True)
+
+
 class AdminOrdersDashboardResponse(BaseModel):
     total_orders: int = Field(alias="totalOrders")
     pending_orders: int = Field(alias="pendingOrders")
@@ -124,6 +131,9 @@ class AdminOrdersDashboardResponse(BaseModel):
     gross_revenue: Decimal = Field(alias="grossRevenue")
     completed_revenue: Decimal = Field(alias="completedRevenue")
     average_ticket: Decimal = Field(alias="averageTicket")
+    top_products: list[AdminDashboardRankItem] = Field(alias="topProducts", default_factory=list)
+    top_neighborhoods: list[AdminDashboardRankItem] = Field(alias="topNeighborhoods", default_factory=list)
+    busy_hours: list[AdminDashboardRankItem] = Field(alias="busyHours", default_factory=list)
 
     model_config = ConfigDict(populate_by_name=True)
 

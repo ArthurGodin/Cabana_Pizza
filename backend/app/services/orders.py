@@ -4,14 +4,15 @@ from dataclasses import dataclass
 from decimal import Decimal, ROUND_HALF_UP
 
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
+from uuid import UUID
 
 from app.models import Category, CrustPrice, PizzaCategoryPrice, Product, ProductOption
 from app.models.crust_flavor import CrustFlavor
 from app.models.enums import PizzaSize, ProductType
 from app.models.order import Order
 from app.models.order_item import OrderItem
-from app.schemas.order import OrderCreateInput, OrderItemInput
+from app.schemas.order import OrderCreateInput, OrderItemInput, OrderTrackingItemOutput, OrderTrackingResponse
 
 ZERO = Decimal("0.00")
 
@@ -67,6 +68,35 @@ def create_order(db: Session, payload: OrderCreateInput) -> Order:
     db.commit()
     db.refresh(order)
     return order
+
+
+def get_order_tracking(db: Session, public_id: UUID) -> OrderTrackingResponse:
+    order = db.scalar(
+        select(Order)
+        .options(selectinload(Order.items))
+        .where(Order.public_id == public_id)
+    )
+
+    if order is None:
+        raise ValueError("Pedido nao encontrado.")
+
+    return OrderTrackingResponse(
+        publicId=order.public_id,
+        status=order.status,
+        fulfillmentType=order.fulfillment_type,
+        total=order.total,
+        createdAt=order.created_at,
+        itemCount=sum(item.quantity for item in order.items),
+        customerFirstName=extract_first_name(order.customer_name),
+        items=[
+            OrderTrackingItemOutput(
+                name=item.product_name,
+                quantity=item.quantity,
+                option=build_tracking_item_option(item),
+            )
+            for item in sorted(order.items, key=lambda current: current.sort_order)
+        ],
+    )
 
 
 def build_order_item(
@@ -242,3 +272,16 @@ def parse_pizza_size(value: str) -> PizzaSize | None:
 
 def normalize_text(value: str) -> str:
     return " ".join(value.strip().lower().split())
+
+
+def extract_first_name(value: str) -> str:
+    return value.strip().split(" ", 1)[0] or "Cliente"
+
+
+def build_tracking_item_option(item: OrderItem) -> str | None:
+    parts = [item.pizza_size.value if item.pizza_size else item.product_option_label]
+
+    if item.crust_name:
+        parts.append(f"Borda {item.crust_name}")
+
+    return " | ".join(part for part in parts if part)

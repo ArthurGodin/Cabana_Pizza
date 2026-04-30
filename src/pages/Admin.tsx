@@ -69,6 +69,7 @@ import {
   type AdminOrdersDashboardFilters,
 } from "@/lib/admin-api";
 import { AdminCatalogPanel } from "@/components/admin/AdminCatalogPanel";
+import { AdminLoyaltyPanel } from "@/components/admin/AdminLoyaltyPanel";
 
 const ME_QUERY_KEY = ["admin", "me"];
 const ORDERS_QUERY_KEY = ["admin", "orders"];
@@ -99,6 +100,9 @@ const EMPTY_DASHBOARD: AdminOrdersDashboard = {
   grossRevenue: "0",
   completedRevenue: "0",
   averageTicket: "0",
+  topProducts: [],
+  topNeighborhoods: [],
+  busyHours: [],
 };
 
 const STATUS_FILTER_OPTIONS: Array<{ value: AdminOrderStatus | "all"; label: string }> = [
@@ -157,7 +161,7 @@ export default function AdminPage() {
       >
     >
   >({});
-  const [activeView, setActiveView] = useState<"orders" | "catalog">("orders");
+  const [activeView, setActiveView] = useState<"orders" | "catalog" | "loyalty">("orders");
 
   const deferredSearch = useDeferredValue(searchInput.trim());
   const dateRange = useMemo<AdminOrdersDashboardFilters>(
@@ -551,6 +555,16 @@ export default function AdminPage() {
                 >
                   Cardapio
                 </button>
+                <button
+                  onClick={() => setActiveView("loyalty")}
+                  className={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
+                    activeView === "loyalty"
+                      ? "border-primary bg-primary/12 text-primary"
+                      : "border-border bg-surface text-muted-foreground hover:border-primary/50 hover:text-foreground"
+                  }`}
+                >
+                  Fidelidade
+                </button>
               </div>
             </div>
 
@@ -586,6 +600,12 @@ export default function AdminPage() {
                   <StatusMetric label="Na entrega" value={stats.outForDeliveryOrders} tone="violet" />
                   <StatusMetric label="Concluidos" value={stats.completedOrders} tone="emerald" />
                   <StatusMetric label="Cancelados" value={stats.cancelledOrders} tone="red" />
+                </div>
+
+                <div className="grid gap-4 lg:grid-cols-3">
+                  <RankCard title="Mais vendidos" items={stats.topProducts} empty="Sem vendas no periodo." />
+                  <RankCard title="Bairros com mais pedidos" items={stats.topNeighborhoods} empty="Sem entregas no periodo." />
+                  <RankCard title="Horarios de pico" items={stats.busyHours} empty="Sem movimento no periodo." />
                 </div>
 
                 <div className="rounded-[2rem] border border-border/60 bg-surface-elevated p-6 shadow-sheet">
@@ -1008,8 +1028,10 @@ export default function AdminPage() {
                   </div>
                 </div>
               </>
-            ) : (
+            ) : activeView === "catalog" ? (
               <AdminCatalogPanel token={token as string} />
+            ) : (
+              <AdminLoyaltyPanel token={token as string} />
             )}
           </section>
         )}
@@ -1069,6 +1091,39 @@ function StatusMetric({
     <article className={`rounded-2xl border px-4 py-3 ${toneClass}`}>
       <p className="text-[11px] uppercase tracking-[0.14em] opacity-80">{label}</p>
       <p className="mt-1 font-display text-2xl font-semibold">{value}</p>
+    </article>
+  );
+}
+
+function RankCard({
+  title,
+  items,
+  empty,
+}: {
+  title: string;
+  items: AdminOrdersDashboard["topProducts"];
+  empty: string;
+}) {
+  return (
+    <article className="rounded-[2rem] border border-border/60 bg-surface-elevated p-5 shadow-sheet">
+      <h3 className="font-display text-xl font-semibold">{title}</h3>
+      {items.length > 0 ? (
+        <ol className="mt-4 space-y-3">
+          {items.map((item, index) => (
+            <li key={`${item.label}-${index}`} className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-foreground">{item.label}</p>
+                <p className="text-xs text-muted-foreground">#{index + 1}</p>
+              </div>
+              <span className="rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
+                {item.value}
+              </span>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p className="mt-4 text-sm text-muted-foreground">{empty}</p>
+      )}
     </article>
   );
 }

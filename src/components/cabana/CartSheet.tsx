@@ -17,7 +17,7 @@ import { useEffect, useMemo, useState, type InputHTMLAttributes } from "react";
 import { toast } from "sonner";
 import { useMenuCatalog } from "@/contexts/menu-context";
 import { getDeliveryCoverage } from "@/lib/delivery-coverage";
-import { getShortOrderReference, submitOrder } from "@/lib/order-api";
+import { getShortOrderReference, submitOrder, type LoyaltySummary } from "@/lib/order-api";
 import {
   buildOrderPayload,
   buildWhatsAppMessage,
@@ -42,10 +42,13 @@ interface Props {
 
 interface SubmittedOrderSummary {
   reference: string;
+  publicId: string;
   totalLabel: string;
   createdAtLabel: string;
   customerName: string;
   whatsappUrl: string;
+  trackingUrl: string;
+  loyalty: LoyaltySummary | null;
 }
 
 export function CartSheet({ open, onEditItem, onClose }: Props) {
@@ -229,8 +232,10 @@ export function CartSheet({ open, onEditItem, onClose }: Props) {
     try {
       const apiOrder = await submitOrder(orderPayload);
       const orderReference = getShortOrderReference(apiOrder.publicId);
+      const trackingUrl = `${window.location.origin}/pedido/${apiOrder.publicId}`;
       const message = buildWhatsAppMessage(orderPayload, formatBRL, {
         orderReference,
+        trackingUrl,
       });
       const whatsappUrl = buildWhatsAppUrl(brand.whatsappNumber, message);
 
@@ -242,10 +247,13 @@ export function CartSheet({ open, onEditItem, onClose }: Props) {
 
       setSubmittedOrder({
         reference: orderReference,
+        publicId: apiOrder.publicId,
         totalLabel: formatBRL(Number(apiOrder.total)),
         createdAtLabel: formatOrderCreatedAt(apiOrder.createdAt),
         customerName: orderPayload.customer.name,
         whatsappUrl,
+        trackingUrl,
+        loyalty: apiOrder.loyalty,
       });
       toast.success(`Pedido ${orderReference} salvo na central e enviado para confirmacao.`);
       clear();
@@ -748,9 +756,53 @@ function OrderSuccessState({ order }: { order: SubmittedOrderSummary }) {
         </div>
 
         <div className="mt-5 rounded-2xl border border-primary/20 bg-primary/10 px-4 py-3 text-left text-sm text-muted-foreground">
-          Se o WhatsApp nao abrir ou voce fechar a conversa, use o botao abaixo para abrir de novo
-          com o mesmo pedido.
+          Guarde o protocolo para acompanhar o andamento do pedido. O acompanhamento mostra apenas
+          status e itens, sem expor endereco ou telefone.
         </div>
+
+        {order.loyalty ? <LoyaltyProgressCard loyalty={order.loyalty} /> : null}
+
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <a
+            href={order.trackingUrl}
+            className="inline-flex min-h-12 items-center justify-center rounded-full border border-border bg-background/80 px-4 text-sm font-semibold transition-colors hover:border-primary/60"
+          >
+            Acompanhar pedido
+          </a>
+          <a
+            href={order.whatsappUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex min-h-12 items-center justify-center rounded-full bg-primary-gradient px-4 text-sm font-semibold text-primary-foreground shadow-elegant"
+          >
+            Abrir WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LoyaltyProgressCard({ loyalty }: { loyalty: LoyaltySummary }) {
+  const percentage = Math.min(100, (loyalty.progressCount / 10) * 100);
+
+  return (
+    <div className="mt-5 rounded-2xl border border-emerald-500/25 bg-emerald-500/10 px-4 py-4 text-left">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-200">
+        Cartao fidelidade
+      </p>
+      {loyalty.availableRewards > 0 ? (
+        <p className="mt-2 text-sm text-emerald-50">
+          Este telefone tem {loyalty.availableRewards} pizza gratis disponivel para resgate na loja.
+        </p>
+      ) : (
+        <p className="mt-2 text-sm text-emerald-50">
+          {loyalty.progressCount}/10 pizzas contabilizadas. Faltam {loyalty.pizzasUntilNextReward} para
+          ganhar uma pizza gratis.
+        </p>
+      )}
+      <div className="mt-3 h-2 overflow-hidden rounded-full bg-background/70">
+        <div className="h-full rounded-full bg-emerald-300" style={{ width: `${percentage}%` }} />
       </div>
     </div>
   );

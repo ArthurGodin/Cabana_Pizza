@@ -38,6 +38,11 @@ from app.schemas.admin import (
     AdminProductUpdateResponse,
     AdminUserOutput,
 )
+from app.schemas.loyalty import (
+    LoyaltyCustomerListResponse,
+    LoyaltyRedemptionCreateInput,
+    LoyaltyRedemptionCreateResponse,
+)
 from app.services.admin_auth import login_admin
 from app.services.admin_catalog import (
     read_admin_catalog,
@@ -57,6 +62,7 @@ from app.services.admin_orders import (
     update_order_status,
 )
 from app.core.config import get_settings
+from app.services.loyalty import create_loyalty_redemption, list_loyalty_customers
 
 router = APIRouter(prefix="/admin")
 
@@ -122,6 +128,36 @@ def read_admin_orders_dashboard(
 ) -> AdminOrdersDashboardResponse:
     _ = current_admin
     return get_orders_dashboard(db, date_from=date_from, date_to=date_to)
+
+
+@router.get("/loyalty", response_model=LoyaltyCustomerListResponse)
+def read_admin_loyalty_customers(
+    search: str | None = Query(default=None, min_length=1, max_length=120),
+    limit: int = Query(default=50, ge=1, le=100),
+    db: Session = Depends(get_db),
+    current_admin: AdminUser = Depends(get_current_admin),
+) -> LoyaltyCustomerListResponse:
+    _ = current_admin
+    return LoyaltyCustomerListResponse(customers=list_loyalty_customers(db, search=search, limit=limit))
+
+
+@router.post(
+    "/loyalty/redemptions",
+    response_model=LoyaltyRedemptionCreateResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def post_admin_loyalty_redemption(
+    payload: LoyaltyRedemptionCreateInput,
+    db: Session = Depends(get_db),
+    current_admin: AdminUser = Depends(get_current_admin),
+) -> LoyaltyRedemptionCreateResponse:
+    try:
+        return create_loyalty_redemption(db, payload=payload, current_admin=current_admin)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        ) from exc
 
 
 @router.patch("/orders/{order_id}/status", response_model=AdminOrderStatusUpdateResponse)

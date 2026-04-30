@@ -8,6 +8,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.models.enums import FulfillmentType, OrderChannel, OrderStatus, PaymentMethod
+from app.schemas.loyalty import LoyaltySummaryOutput
 
 MoneyField = Annotated[Decimal, Field(ge=0, max_digits=10, decimal_places=2)]
 PositiveQuantityField = Annotated[int, Field(ge=1, le=20)]
@@ -142,5 +143,25 @@ class OrderCreateResponse(BaseModel):
     status: OrderStatus
     total: Decimal
     created_at: datetime = Field(alias="createdAt")
+    loyalty: LoyaltySummaryOutput | None = None
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+
+
+class OrderTrackingItemOutput(BaseModel):
+    name: str
+    quantity: int
+    option: str | None = None
+
+
+class OrderTrackingResponse(BaseModel):
+    public_id: UUID = Field(alias="publicId")
+    status: OrderStatus
+    fulfillment_type: FulfillmentType = Field(alias="fulfillmentType")
+    total: Decimal
+    created_at: datetime = Field(alias="createdAt")
+    item_count: int = Field(alias="itemCount")
+    customer_first_name: str = Field(alias="customerFirstName")
+    items: list[OrderTrackingItemOutput]
+
+    model_config = ConfigDict(populate_by_name=True)

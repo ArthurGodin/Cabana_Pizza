@@ -5,6 +5,7 @@ from app.models.crust_price import CrustPrice
 from app.models.order import Order
 from app.models.order_event import OrderEvent
 from app.models.order_item import OrderItem
+from app.models.loyalty_redemption import LoyaltyRedemption
 from app.models.pizza_category_price import PizzaCategoryPrice
 from app.models.product import Product
 from app.models.product_option import ProductOption
@@ -17,6 +18,7 @@ __all__ = [
     "Order",
     "OrderEvent",
     "OrderItem",
+    "LoyaltyRedemption",
     "PizzaCategoryPrice",
     "Product",
     "ProductOption",
