@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   motion,
   useReducedMotion,
@@ -7,6 +8,7 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
+import { fetchPublicStoreStatus } from "@/lib/store-status-api";
 import { getStoreStatus, storeHoursSummary } from "@/lib/store-hours";
 
 interface Props {
@@ -37,6 +39,14 @@ export function Hero({ onOrder, onViewMenu }: Props) {
   const sectionRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
   const [storeStatus, setStoreStatus] = useState(() => getStoreStatus());
+  const publicStoreStatusQuery = useQuery({
+    queryKey: ["public-store-status"],
+    queryFn: fetchPublicStoreStatus,
+    staleTime: 30_000,
+    refetchInterval: 60_000,
+    retry: false,
+  });
+  const isOrderingPaused = Boolean(publicStoreStatusQuery.data?.isOrderingPaused);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -92,11 +102,15 @@ export function Hero({ onOrder, onViewMenu }: Props) {
             >
               <span className="inline-flex items-center gap-2">
                 <span
-                  className={`h-1.5 w-1.5 rounded-full ${storeStatus.isOpen ? "bg-emerald-400 animate-pulse" : "bg-primary"}`}
+                  className={`h-1.5 w-1.5 rounded-full ${storeStatus.isOpen && !isOrderingPaused ? "bg-emerald-400 animate-pulse" : "bg-primary"}`}
                 />
-                {storeStatus.label}
+                {isOrderingPaused ? "Pedidos pausados" : storeStatus.label}
               </span>
-              <span className="tracking-[0.14em] text-muted-foreground/90">{storeStatus.detail}</span>
+              <span className="tracking-[0.14em] text-muted-foreground/90">
+                {isOrderingPaused
+                  ? publicStoreStatusQuery.data?.pauseReason || "Atendimento temporariamente pausado."
+                  : storeStatus.detail}
+              </span>
             </motion.div>
 
             <motion.h1
@@ -105,8 +119,8 @@ export function Hero({ onOrder, onViewMenu }: Props) {
               transition={{ duration: 0.7, delay: 0.05, ease: [0.25, 1, 0.5, 1] }}
               className="text-balance font-display text-[clamp(2.75rem,12vw,4.5rem)] font-semibold leading-[0.95] tracking-tight sm:text-6xl md:text-7xl lg:text-[5.8rem]"
             >
-              A arte da pizza no
-              <span className="block italic text-primary">fogo a lenha</span>
+              A melhor pizza
+              <span className="block italic text-primary">de Timon,</span>
               agora no seu sofá.
             </motion.h1>
 
@@ -116,8 +130,8 @@ export function Hero({ onOrder, onViewMenu }: Props) {
               transition={{ duration: 0.7, delay: 0.15, ease: [0.25, 1, 0.5, 1] }}
               className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base md:mx-0 md:mt-6 md:text-xl"
             >
-              Massa de fermentação natural (48h), ingredientes premium e o toque defumado da
-              lenha. O padrão das melhores pizzarias de SP, feito com paixão em Timon.
+              A pizzaria #1 de Timon, com mais de 540 avaliações 4.4 estrelas. Massa caprichada,
+              recheio generoso e atendimento que virou tradição.
             </motion.p>
 
             <motion.p
@@ -137,9 +151,10 @@ export function Hero({ onOrder, onViewMenu }: Props) {
             >
               <button
                 onClick={onOrder}
-                className="group relative inline-flex h-12 w-full items-center justify-center rounded-full bg-primary-gradient px-7 text-sm font-semibold tracking-[0.02em] text-primary-foreground shadow-elegant transition-all duration-300 ease-spring hover:-translate-y-0.5 hover:shadow-glow sm:h-[52px] sm:w-auto"
+                disabled={isOrderingPaused}
+                className="group relative inline-flex h-12 w-full items-center justify-center rounded-full bg-primary-gradient px-7 text-sm font-semibold tracking-[0.02em] text-primary-foreground shadow-elegant transition-all duration-300 ease-spring hover:-translate-y-0.5 hover:shadow-glow disabled:cursor-not-allowed disabled:opacity-60 sm:h-[52px] sm:w-auto"
               >
-                Quero minha pizza
+                {isOrderingPaused ? "Pedidos pausados" : "Quero minha pizza"}
                 <span className="ml-2 text-sm transition-transform group-hover:translate-x-1">→</span>
               </button>
 
@@ -215,7 +230,6 @@ function useLayerMotion(
   const y = useTransform(progress, [start, end], [offsetY, 0]);
   const x = useTransform(progress, [start, end], [12, 0]);
   const scale = useTransform(progress, [start, end], [startScale, 1]);
-  const filter = useTransform(progress, [start, end], ["blur(18px)", "blur(0px)"]);
 
-  return { opacity, x, y, scale, filter };
+  return { opacity, x, y, scale };
 }

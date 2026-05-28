@@ -7,10 +7,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { MenuProvider } from "@/contexts/menu-context";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
-import OrderTrackingPage from "./pages/OrderTracking.tsx";
 
 const queryClient = new QueryClient();
 const AdminPage = lazy(() => import("./pages/Admin.tsx"));
+const OrderTrackingPage = lazy(() => import("./pages/OrderTracking.tsx"));
 
 function RouteFallback() {
   return (
@@ -29,7 +29,14 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/pedido/:publicId" element={<OrderTrackingPage />} />
+            <Route
+              path="/pedido/:publicId"
+              element={
+                <Suspense fallback={<RouteFallback />}>
+                  <OrderTrackingPage />
+                </Suspense>
+              }
+            />
             <Route
               path="/admin"
               element={

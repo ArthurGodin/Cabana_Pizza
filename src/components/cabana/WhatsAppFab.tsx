@@ -13,7 +13,7 @@ export function WhatsAppFab({ onCartClick }: Props) {
   const { count } = useCart();
   const genericWhatsAppUrl = buildWhatsAppUrl(
     brand.whatsappNumber,
-    "Olá! Quero falar com a Cabana da Pizza sobre um pedido.",
+    "Olá! Quero falar com a Pizzaria Mesa 10 sobre um pedido.",
   );
 
   const className =

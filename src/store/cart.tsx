@@ -36,8 +36,8 @@ interface CartCtx {
 }
 
 const Ctx = createContext<CartCtx | null>(null);
-const CART_STORAGE_KEY = "cabana-cart-items";
-const CHECKOUT_STORAGE_KEY = "cabana-checkout-form";
+const CART_STORAGE_KEY = "mesa10-cart-items";
+const CHECKOUT_STORAGE_KEY = "mesa10-checkout-form";
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(() => readStorage(CART_STORAGE_KEY, []));
@@ -141,7 +141,7 @@ export function getStartingPrice(product: Product): number {
     return product.priceUnit ?? 0;
   }
 
-  return product.priceM ?? product.priceG ?? product.priceGG ?? 0;
+  return product.priceP ?? product.priceM ?? product.priceG ?? product.priceGG ?? 0;
 }
 
 export function upsertCartItems(items: CartItem[], incoming: Omit<CartItem, "uid" | "qty">) {

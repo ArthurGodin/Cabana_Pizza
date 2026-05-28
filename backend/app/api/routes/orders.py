@@ -10,6 +10,7 @@ from app.db.session import get_db
 from app.schemas.order import OrderCreateInput, OrderCreateResponse, OrderTrackingResponse
 from app.services.loyalty import read_loyalty_summary
 from app.services.orders import create_order, get_order_tracking
+from app.services.store_settings import StorePausedError, ensure_store_accepts_orders
 
 router = APIRouter(prefix="/orders")
 
@@ -22,8 +23,14 @@ router = APIRouter(prefix="/orders")
 )
 def create_order_endpoint(payload: OrderCreateInput, db: Session = Depends(get_db)) -> OrderCreateResponse:
     try:
+        ensure_store_accepts_orders(db)
         order = create_order(db, payload)
         loyalty = read_loyalty_summary(db, payload.customer.phone, customer_name=payload.customer.name)
+    except StorePausedError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=str(exc),
+        ) from exc
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

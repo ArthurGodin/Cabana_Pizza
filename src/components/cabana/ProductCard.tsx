@@ -22,6 +22,7 @@ export function ProductCard({ product, onAdd }: Props) {
           alt={product.name}
           loading="lazy"
           decoding="async"
+          sizes="(min-width: 1536px) 300px, (min-width: 1280px) 290px, (min-width: 1024px) 25vw, (min-width: 640px) 34vw, 47vw"
           width={768}
           height={768}
           className="h-full w-full object-cover transition-transform duration-700 ease-spring group-hover:scale-110"

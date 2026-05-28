@@ -9,6 +9,7 @@ class ProductType(str, Enum):
 
 
 class PizzaSize(str, Enum):
+    P = "P"
     M = "M"
     G = "G"
     GG = "GG"

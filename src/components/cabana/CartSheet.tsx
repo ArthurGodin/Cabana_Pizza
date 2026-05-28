@@ -13,11 +13,14 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState, type InputHTMLAttributes } from "react";
 import { toast } from "sonner";
 import { useMenuCatalog } from "@/contexts/menu-context";
 import { getDeliveryCoverage } from "@/lib/delivery-coverage";
-import { getShortOrderReference, submitOrder, type LoyaltySummary } from "@/lib/order-api";
+import { calculateDemoDeliveryFee } from "@/lib/delivery-fees";
+import { OrderApiError, getShortOrderReference, submitOrder, type LoyaltySummary } from "@/lib/order-api";
+import { fetchPublicStoreStatus } from "@/lib/store-status-api";
 import {
   buildOrderPayload,
   buildWhatsAppMessage,
@@ -68,11 +71,18 @@ export function CartSheet({ open, onEditItem, onClose }: Props) {
   const [cepLoading, setCepLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submittedOrder, setSubmittedOrder] = useState<SubmittedOrderSummary | null>(null);
-
-  const orderPayload = useMemo(
-    () => buildOrderPayload({ form: checkout, items, total }),
-    [checkout, items, total],
-  );
+  const publicStoreStatusQuery = useQuery({
+    queryKey: ["public-store-status"],
+    queryFn: fetchPublicStoreStatus,
+    enabled: open,
+    staleTime: 30_000,
+    refetchInterval: 60_000,
+    retry: false,
+  });
+  const isOrderingPaused = Boolean(publicStoreStatusQuery.data?.isOrderingPaused);
+  const pauseReason =
+    publicStoreStatusQuery.data?.pauseReason ||
+    "A loja pausou os pedidos temporariamente. Tente novamente em alguns minutos.";
 
   const deliveryCoverage = useMemo(
     () =>
@@ -83,6 +93,14 @@ export function CartSheet({ open, onEditItem, onClose }: Props) {
         neighborhoods: deliveryNeighborhoods,
       }),
     [brand.city, brand.state, checkout, deliveryNeighborhoods],
+  );
+
+  const deliveryFee = useMemo(() => calculateDemoDeliveryFee(checkout), [checkout]);
+  const grandTotal = total + deliveryFee;
+
+  const orderPayload = useMemo(
+    () => buildOrderPayload({ form: checkout, items, total, deliveryFee }),
+    [checkout, deliveryFee, items, total],
   );
 
   const handleSheetClose = () => {
@@ -199,6 +217,11 @@ export function CartSheet({ open, onEditItem, onClose }: Props) {
       return;
     }
 
+    if (isOrderingPaused) {
+      toast.error(pauseReason);
+      return;
+    }
+
     if (deliveryCoverage?.status === "unavailable") {
       toast.error(deliveryCoverage.description);
       return;
@@ -220,6 +243,11 @@ export function CartSheet({ open, onEditItem, onClose }: Props) {
       return;
     }
 
+    if (isOrderingPaused) {
+      toast.error(pauseReason);
+      return;
+    }
+
     if (deliveryCoverage?.status === "unavailable") {
       toast.error(deliveryCoverage.description);
       return;
@@ -233,7 +261,16 @@ export function CartSheet({ open, onEditItem, onClose }: Props) {
       const apiOrder = await submitOrder(orderPayload);
       const orderReference = getShortOrderReference(apiOrder.publicId);
       const trackingUrl = `${window.location.origin}/pedido/${apiOrder.publicId}`;
-      const message = buildWhatsAppMessage(orderPayload, formatBRL, {
+      const registeredOrderPayload = {
+        ...orderPayload,
+        summary: {
+          ...orderPayload.summary,
+          subtotal: Number(apiOrder.subtotal),
+          deliveryFee: Number(apiOrder.deliveryFee),
+          total: Number(apiOrder.total),
+        },
+      };
+      const message = buildWhatsAppMessage(registeredOrderPayload, formatBRL, {
         orderReference,
         trackingUrl,
       });
@@ -258,6 +295,12 @@ export function CartSheet({ open, onEditItem, onClose }: Props) {
       toast.success(`Pedido ${orderReference} salvo na central e enviado para confirmacao.`);
       clear();
     } catch (error) {
+      if (error instanceof OrderApiError && error.status === 409) {
+        whatsappWindow?.close();
+        toast.error(error.message);
+        return;
+      }
+
       const message = buildWhatsAppMessage(orderPayload, formatBRL);
 
       openWhatsAppOrderWindow({
@@ -354,6 +397,8 @@ export function CartSheet({ open, onEditItem, onClose }: Props) {
                               <img
                                 src={item.product.image}
                                 alt={item.product.name}
+                                loading="lazy"
+                                decoding="async"
                                 width={64}
                                 height={64}
                                 className="h-16 w-16 rounded-xl object-cover"
@@ -637,6 +682,13 @@ export function CartSheet({ open, onEditItem, onClose }: Props) {
                     </div>
                   </section>
 
+                  {isOrderingPaused && (
+                    <section className="rounded-3xl border border-destructive/30 bg-destructive/10 px-4 py-4 text-sm text-destructive">
+                      <p className="font-semibold">Pedidos pausados no momento</p>
+                      <p className="mt-1 text-destructive/90">{pauseReason}</p>
+                    </section>
+                  )}
+
                   <section className="rounded-3xl border border-border/60 bg-background/60 px-4 py-4 text-sm text-muted-foreground">
                     <div className="flex items-start gap-3">
                       <span className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-full border border-primary/20 bg-primary/10">
@@ -679,9 +731,17 @@ export function CartSheet({ open, onEditItem, onClose }: Props) {
                   <span>Subtotal</span>
                   <span>{formatBRL(total)}</span>
                 </div>
+                {checkout.fulfillment === "delivery" && (
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <span>Entrega estimada</span>
+                    <span>
+                      {deliveryFee > 0 ? formatBRL(deliveryFee) : "Informe o bairro"}
+                    </span>
+                  </div>
+                )}
                 <div className="flex items-center justify-between">
                   <span className="font-display text-lg">Total</span>
-                  <span className="font-display text-2xl font-semibold">{formatBRL(total)}</span>
+                  <span className="font-display text-2xl font-semibold">{formatBRL(grandTotal)}</span>
                 </div>
                 <div className="flex flex-col gap-3">
                   <button
@@ -692,7 +752,7 @@ export function CartSheet({ open, onEditItem, onClose }: Props) {
                   </button>
                   <button
                     onClick={handleSubmitAndSend}
-                    disabled={submitting}
+                    disabled={submitting || isOrderingPaused}
                     className="flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-primary-gradient px-5 text-sm font-semibold text-primary-foreground shadow-elegant transition-shadow hover:shadow-glow disabled:cursor-not-allowed disabled:opacity-70"
                   >
                     {submitting ? (
@@ -700,7 +760,11 @@ export function CartSheet({ open, onEditItem, onClose }: Props) {
                     ) : (
                       <MessageCircle className="h-4 w-4" />
                     )}
-                    {submitting ? "Registrando pedido..." : "Registrar e enviar"}
+                    {isOrderingPaused
+                      ? "Loja pausada"
+                      : submitting
+                        ? "Registrando pedido..."
+                        : "Registrar e enviar"}
                   </button>
                 </div>
               </footer>
@@ -722,7 +786,7 @@ function OrderSuccessState({ order }: { order: SubmittedOrderSummary }) {
 
         <h3 className="mt-5 font-display text-2xl font-semibold">Pedido salvo com sucesso</h3>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          O pedido de {order.customerName} ja entrou na central da Cabana. O WhatsApp da loja foi
+          O pedido de {order.customerName} ja entrou na central da Mesa 10. O WhatsApp da loja foi
           aberto para voce concluir a confirmacao.
         </p>
 

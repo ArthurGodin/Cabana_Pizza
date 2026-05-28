@@ -1,4 +1,4 @@
-# Backend Cabana da Pizza
+# Backend Pizzaria Mesa 10
 
 "PS C:\Users\godinho> cd c:\Users\godinho\CabanaDaPizza\backend
 PS C:\Users\godinho\CabanaDaPizza\backend> .\.venv\Scripts\Activate.ps1
@@ -86,6 +86,9 @@ Para publicar fora da maquina local, use o roteiro do arquivo `DEPLOY-CONTROLADO
 - `GET http://127.0.0.1:8000/api/admin/me`
 - `GET http://127.0.0.1:8000/api/admin/orders`
 - `GET http://127.0.0.1:8000/api/admin/orders/dashboard`
+- `GET http://127.0.0.1:8000/api/store/status`
+- `GET http://127.0.0.1:8000/api/admin/store/status`
+- `PATCH http://127.0.0.1:8000/api/admin/store/status`
 - `PATCH http://127.0.0.1:8000/api/admin/orders/{id}/status`
 - `POST http://127.0.0.1:8000/api/admin/orders/{id}/undo-status`
 - `GET http://127.0.0.1:8000/api/admin/catalog`
@@ -119,8 +122,8 @@ O resumo operacional em `GET /api/admin/orders/dashboard` aceita:
 No `.env`, defina:
 
 ```env
-ADMIN_BOOTSTRAP_NAME=Cabana Admin
-ADMIN_BOOTSTRAP_EMAIL=admin@cabanadapizza.com
+ADMIN_BOOTSTRAP_NAME=Mesa 10 Admin
+ADMIN_BOOTSTRAP_EMAIL=admin@mesa10.com
 ADMIN_BOOTSTRAP_PASSWORD=troque-esta-senha
 ```
 
@@ -155,7 +158,9 @@ Nesta fase o painel ja consegue:
 - alternar entre lista de atendimento e visao de cozinha em colunas
 - receber aviso visual e sonoro quando entrar pedido novo no painel
 - imprimir comanda limpa do pedido para cozinha ou balcao
-- acompanhar resumo do periodo com pedidos, fila ativa, entregas, faturamento e contagem por status
+- pausar e reabrir pedidos do site sem derrubar o cardapio publico
+- acompanhar resumo do periodo com pedidos, fila ativa, entregas, receita valida, receita concluida, ticket medio e contagem por status
+- visualizar graficos de distribuicao da fila e receita por situacao
 - avancar o status operacional por botoes guiados de proxima acao
 - desfazer a ultima mudanca de status dentro de uma janela curta de seguranca
 - registrar historico de status com horario e admin responsavel
@@ -224,10 +229,22 @@ Agora o backend tambem sabe servir imagens enviadas pelo painel.
 Como isso funciona:
 
 - o admin envia um arquivo JPG, PNG ou WEBP
-- o backend salva em `backend/media/products`
+- o backend salva em `backend/media/products`, ou no Supabase Storage quando configurado
 - a API devolve um caminho como `/media/products/arquivo.jpg`
 - o produto passa a poder usar esse caminho como imagem
-- o site publico entende tanto imagens locais quanto imagens enviadas pelo painel
+- o site publico entende tanto imagens locais quanto imagens enviadas pelo painel ou Supabase Storage
+
+Em producao, prefira Supabase Storage para as imagens nao dependerem do disco temporario do Render:
+
+```env
+MEDIA_STORAGE_PROVIDER=supabase
+SUPABASE_URL=https://seu-projeto.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=sua-service-role-key
+SUPABASE_STORAGE_BUCKET=mesa10-products
+SUPABASE_STORAGE_PATH_PREFIX=products
+```
+
+O bucket precisa estar publico para o site exibir as fotos sem login.
 
 Nesta fase, o fluxo de imagem e intencionalmente simples:
 
@@ -299,7 +316,8 @@ Esse script:
   "summary": {
     "itemCount": 1,
     "subtotal": 56,
-    "total": 56
+    "deliveryFee": 8,
+    "total": 64
   },
   "notes": "Sem troco"
 }

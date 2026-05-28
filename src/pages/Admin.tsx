@@ -8,7 +8,10 @@ import {
   BellRing,
   LogOut,
   MapPin,
+  PauseCircle,
   Phone,
+  PlayCircle,
+  Power,
   Printer,
   RefreshCw,
   RotateCcw,
@@ -29,6 +32,18 @@ import {
   type FormEvent,
   type ReactNode,
 } from "react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import {
@@ -56,10 +71,12 @@ import {
   fetchAdminMe,
   fetchAdminOrdersDashboard,
   fetchAdminOrdersWithFilters,
+  fetchAdminStoreStatus,
   loginAdmin,
   logoutAdmin,
   readAdminToken,
   undoAdminOrderStatus,
+  updateAdminStoreStatus,
   updateAdminOrderStatus,
   writeAdminToken,
   type AdminOrder,
@@ -67,6 +84,7 @@ import {
   type AdminOrderStatus,
   type AdminOrdersDashboard,
   type AdminOrdersDashboardFilters,
+  type StoreStatus,
 } from "@/lib/admin-api";
 import { AdminCatalogPanel } from "@/components/admin/AdminCatalogPanel";
 import { AdminLoyaltyPanel } from "@/components/admin/AdminLoyaltyPanel";
@@ -75,9 +93,18 @@ const ME_QUERY_KEY = ["admin", "me"];
 const ORDERS_QUERY_KEY = ["admin", "orders"];
 const DASHBOARD_QUERY_KEY = ["admin", "orders-dashboard"];
 const NEW_ORDERS_WATCH_QUERY_KEY = ["admin", "new-orders-watch"];
+const STORE_STATUS_QUERY_KEY = ["admin", "store-status"];
 
 type AdminDatePreset = "today" | "yesterday" | "last7" | "custom" | "all";
 type OrdersMode = "list" | "kitchen";
+type DashboardStats = AdminOrdersDashboard & {
+  activeOrders: number;
+  grossRevenueNumber: number;
+  completedRevenueNumber: number;
+  activeRevenueNumber: number;
+  cancelledRevenueNumber: number;
+  averageTicketNumber: number;
+};
 
 const DATE_FILTER_OPTIONS: Array<{ value: AdminDatePreset; label: string }> = [
   { value: "today", label: "Hoje" },
@@ -89,6 +116,7 @@ const DATE_FILTER_OPTIONS: Array<{ value: AdminDatePreset; label: string }> = [
 
 const EMPTY_DASHBOARD: AdminOrdersDashboard = {
   totalOrders: 0,
+  validOrders: 0,
   pendingOrders: 0,
   confirmedOrders: 0,
   preparingOrders: 0,
@@ -99,10 +127,13 @@ const EMPTY_DASHBOARD: AdminOrdersDashboard = {
   pickupOrders: 0,
   grossRevenue: "0",
   completedRevenue: "0",
+  activeRevenue: "0",
+  cancelledRevenue: "0",
   averageTicket: "0",
   topProducts: [],
   topNeighborhoods: [],
   busyHours: [],
+  revenueByStatus: [],
 };
 
 const STATUS_FILTER_OPTIONS: Array<{ value: AdminOrderStatus | "all"; label: string }> = [
@@ -220,6 +251,13 @@ export default function AdminPage() {
     retry: false,
   });
 
+  const storeStatusQuery = useQuery({
+    queryKey: STORE_STATUS_QUERY_KEY,
+    queryFn: () => fetchAdminStoreStatus(token as string),
+    enabled: Boolean(token) && activeView === "orders",
+    retry: false,
+  });
+
   const newOrdersWatchQuery = useQuery({
     queryKey: NEW_ORDERS_WATCH_QUERY_KEY,
     queryFn: () =>
@@ -283,8 +321,29 @@ export default function AdminPage() {
     },
   });
 
+  const storeStatusMutation = useMutation({
+    mutationFn: (input: { isOrderingPaused: boolean; pauseReason?: string | null }) =>
+      updateAdminStoreStatus(token as string, input),
+    onSuccess: (status) => {
+      queryClient.setQueryData(STORE_STATUS_QUERY_KEY, status);
+      void queryClient.invalidateQueries({ queryKey: STORE_STATUS_QUERY_KEY });
+      toast.success(status.isOrderingPaused ? "Pedidos pausados no site." : "Pedidos reativados no site.");
+    },
+    onError: (error) => {
+      const message =
+        error instanceof Error ? error.message : "Nao foi possivel atualizar o status da loja.";
+      toast.error(message);
+    },
+  });
+
   useEffect(() => {
-    const authErrors = [meQuery.error, ordersQuery.error, dashboardQuery.error, newOrdersWatchQuery.error].filter(
+    const authErrors = [
+      meQuery.error,
+      ordersQuery.error,
+      dashboardQuery.error,
+      newOrdersWatchQuery.error,
+      storeStatusQuery.error,
+    ].filter(
       (value): value is AdminApiError => value instanceof AdminApiError,
     );
 
@@ -296,9 +355,17 @@ export default function AdminPage() {
       queryClient.removeQueries({ queryKey: ORDERS_QUERY_KEY });
       queryClient.removeQueries({ queryKey: DASHBOARD_QUERY_KEY });
       queryClient.removeQueries({ queryKey: NEW_ORDERS_WATCH_QUERY_KEY });
+      queryClient.removeQueries({ queryKey: STORE_STATUS_QUERY_KEY });
       toast.error("Sua sessao de admin expirou. Entre novamente.");
     }
-  }, [dashboardQuery.error, meQuery.error, newOrdersWatchQuery.error, ordersQuery.error, queryClient]);
+  }, [
+    dashboardQuery.error,
+    meQuery.error,
+    newOrdersWatchQuery.error,
+    ordersQuery.error,
+    queryClient,
+    storeStatusQuery.error,
+  ]);
 
   useEffect(() => {
     const watchedOrders = newOrdersWatchQuery.data ?? [];
@@ -359,6 +426,8 @@ export default function AdminPage() {
       activeOrders,
       grossRevenueNumber: Number(dashboard.grossRevenue),
       completedRevenueNumber: Number(dashboard.completedRevenue),
+      activeRevenueNumber: Number(dashboard.activeRevenue),
+      cancelledRevenueNumber: Number(dashboard.cancelledRevenue),
       averageTicketNumber: Number(dashboard.averageTicket),
     };
   }, [dashboardQuery.data]);
@@ -415,7 +484,7 @@ export default function AdminPage() {
       <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.22em] text-primary/80">Cabana da Pizza</p>
+            <p className="text-[11px] uppercase tracking-[0.22em] text-primary/80">Pizzaria Mesa 10</p>
             <h1 className="mt-2 font-display text-3xl font-semibold sm:text-4xl">
               Painel de operacao
             </h1>
@@ -456,7 +525,7 @@ export default function AdminPage() {
                   <input
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
-                    placeholder="admin@cabanadapizza.com"
+                    placeholder="admin@mesa10.com"
                     className={adminFieldClass()}
                     autoComplete="username"
                   />
@@ -570,7 +639,19 @@ export default function AdminPage() {
 
             {activeView === "orders" ? (
               <>
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <StoreOperationsCard
+                  status={storeStatusQuery.data ?? null}
+                  isLoading={storeStatusQuery.isLoading}
+                  isUpdating={storeStatusMutation.isPending}
+                  onPause={(pauseReason) =>
+                    storeStatusMutation.mutate({ isOrderingPaused: true, pauseReason })
+                  }
+                  onResume={() =>
+                    storeStatusMutation.mutate({ isOrderingPaused: false, pauseReason: null })
+                  }
+                />
+
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
                   <MetricCard
                     icon={<ShoppingBag className="h-5 w-5 text-primary" />}
                     label="Pedidos no periodo"
@@ -588,8 +669,18 @@ export default function AdminPage() {
                   />
                   <MetricCard
                     icon={<Store className="h-5 w-5 text-primary" />}
-                    label="Faturamento bruto"
+                    label="Receita valida"
                     value={formatCurrency(stats.grossRevenueNumber)}
+                  />
+                  <MetricCard
+                    icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
+                    label="Receita concluida"
+                    value={formatCurrency(stats.completedRevenueNumber)}
+                  />
+                  <MetricCard
+                    icon={<CreditCard className="h-5 w-5 text-primary" />}
+                    label="Ticket medio"
+                    value={formatCurrency(stats.averageTicketNumber)}
                   />
                 </div>
 
@@ -601,6 +692,8 @@ export default function AdminPage() {
                   <StatusMetric label="Concluidos" value={stats.completedOrders} tone="emerald" />
                   <StatusMetric label="Cancelados" value={stats.cancelledOrders} tone="red" />
                 </div>
+
+                <DashboardCharts stats={stats} />
 
                 <div className="grid gap-4 lg:grid-cols-3">
                   <RankCard title="Mais vendidos" items={stats.topProducts} empty="Sem vendas no periodo." />
@@ -1068,6 +1161,204 @@ function MetricCard({
     </article>
   );
 }
+
+function StoreOperationsCard({
+  status,
+  isLoading,
+  isUpdating,
+  onPause,
+  onResume,
+}: {
+  status: StoreStatus | null;
+  isLoading: boolean;
+  isUpdating: boolean;
+  onPause: (pauseReason: string) => void;
+  onResume: () => void;
+}) {
+  const [pauseReason, setPauseReason] = useState(
+    "Atendimento pausado temporariamente. Estamos ajustando a operacao.",
+  );
+  const isPaused = Boolean(status?.isOrderingPaused);
+
+  return (
+    <section className="rounded-[2rem] border border-border/60 bg-surface-elevated p-5 shadow-sheet">
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex items-start gap-4">
+          <span
+            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border ${
+              isPaused
+                ? "border-destructive/30 bg-destructive/10 text-destructive"
+                : "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
+            }`}
+          >
+            {isPaused ? <PauseCircle className="h-5 w-5" /> : <Power className="h-5 w-5" />}
+          </span>
+
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.18em] text-primary/80">
+              Controle operacional
+            </p>
+            <h3 className="mt-1 font-display text-2xl font-semibold">
+              {isLoading
+                ? "Carregando status da loja"
+                : isPaused
+                  ? "Pedidos pausados no site"
+                  : "Pedidos abertos no site"}
+            </h3>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              {isPaused
+                ? status?.pauseReason || "O cliente ainda ve o cardapio, mas nao consegue registrar novo pedido."
+                : "Use este controle quando a cozinha estiver sobrecarregada, sem motoboy ou fora do atendimento."}
+            </p>
+          </div>
+        </div>
+
+        <div className="w-full max-w-xl space-y-3">
+          <input
+            value={pauseReason}
+            onChange={(event) => setPauseReason(event.target.value)}
+            disabled={isPaused || isUpdating}
+            placeholder="Mensagem mostrada ao cliente quando pausar"
+            className="h-11 w-full rounded-full border border-border bg-background/80 px-4 text-sm outline-none transition-colors focus:border-primary/70 disabled:opacity-60"
+          />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <button
+              type="button"
+              onClick={() => onPause(pauseReason)}
+              disabled={isPaused || isUpdating}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-destructive/30 bg-destructive/10 px-4 text-sm font-semibold text-destructive transition-colors hover:bg-destructive/15 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <PauseCircle className="h-4 w-4" />
+              Pausar pedidos
+            </button>
+            <button
+              type="button"
+              onClick={onResume}
+              disabled={!isPaused || isUpdating}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 text-sm font-semibold text-emerald-100 transition-colors hover:bg-emerald-500/15 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <PlayCircle className="h-4 w-4" />
+              Reabrir pedidos
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function DashboardCharts({ stats }: { stats: DashboardStats }) {
+  const statusData = [
+    { name: "Pendentes", value: stats.pendingOrders, color: "#f59e0b" },
+    { name: "Confirmados", value: stats.confirmedOrders, color: "#38bdf8" },
+    { name: "Preparando", value: stats.preparingOrders, color: "#f97316" },
+    { name: "Na entrega", value: stats.outForDeliveryOrders, color: "#8b5cf6" },
+    { name: "Concluidos", value: stats.completedOrders, color: "#34d399" },
+    { name: "Cancelados", value: stats.cancelledOrders, color: "#ef4444" },
+  ].filter((item) => item.value > 0);
+  const revenueData = [
+    { name: "Ativa", value: stats.activeRevenueNumber },
+    { name: "Concluida", value: stats.completedRevenueNumber },
+    { name: "Cancelada", value: stats.cancelledRevenueNumber },
+  ].filter((item) => item.value > 0);
+
+  return (
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+      <article className="rounded-[2rem] border border-border/60 bg-surface-elevated p-5 shadow-sheet">
+        <h3 className="font-display text-xl font-semibold">Distribuicao da fila</h3>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Mostra onde os pedidos estao concentrados agora.
+        </p>
+        <div className="mt-5 h-64">
+          {statusData.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={statusData} dataKey="value" nameKey="name" innerRadius={58} outerRadius={92}>
+                  {statusData.map((entry) => (
+                    <Cell key={entry.name} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value) => [`${value} pedido(s)`, "Quantidade"]}
+                  contentStyle={chartTooltipStyle}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <EmptyChartState message="Sem pedidos no periodo selecionado." />
+          )}
+        </div>
+        <ChartLegend items={statusData.map((item) => ({ label: item.name, color: item.color }))} />
+      </article>
+
+      <article className="rounded-[2rem] border border-border/60 bg-surface-elevated p-5 shadow-sheet">
+        <h3 className="font-display text-xl font-semibold">Receita por situacao</h3>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Separa dinheiro em fila, concluido e cancelado para leitura rapida.
+        </p>
+        <div className="mt-5 h-64">
+          {revenueData.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={revenueData}>
+                <CartesianGrid stroke="rgba(255,255,255,0.08)" vertical={false} />
+                <XAxis dataKey="name" stroke="rgba(255,255,255,0.45)" tickLine={false} axisLine={false} />
+                <YAxis
+                  stroke="rgba(255,255,255,0.45)"
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(value) => `R$ ${value}`}
+                  width={64}
+                />
+                <Tooltip
+                  formatter={(value) => [formatCurrency(Number(value)), "Receita"]}
+                  contentStyle={chartTooltipStyle}
+                />
+                <Bar dataKey="value" radius={[14, 14, 4, 4]} fill="#e24a2a" />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <EmptyChartState message="Sem receita para analisar neste periodo." />
+          )}
+        </div>
+      </article>
+    </div>
+  );
+}
+
+function EmptyChartState({ message }: { message: string }) {
+  return (
+    <div className="flex h-full items-center justify-center rounded-3xl border border-border/60 bg-background/50 px-5 text-center text-sm text-muted-foreground">
+      {message}
+    </div>
+  );
+}
+
+function ChartLegend({ items }: { items: Array<{ label: string; color: string }> }) {
+  if (items.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="mt-4 flex flex-wrap gap-2">
+      {items.map((item) => (
+        <span
+          key={item.label}
+          className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/60 px-3 py-1 text-xs text-muted-foreground"
+        >
+          <span className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
+          {item.label}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+const chartTooltipStyle = {
+  border: "1px solid rgba(255,255,255,0.12)",
+  borderRadius: "16px",
+  background: "rgba(18, 13, 11, 0.96)",
+  color: "#fff",
+};
 
 function StatusMetric({
   label,
@@ -1876,7 +2167,7 @@ function buildOrderTicketHtml(order: AdminOrder) {
       </head>
       <body>
         <div class="header">
-          <h1>Cabana da Pizza</h1>
+          <h1>Pizzaria Mesa 10</h1>
           <p class="protocol">Pedido ${escapeHtml(shortProtocol(order.publicId))} · ${escapeHtml(formatDateTime(order.createdAt))}</p>
           <p class="protocol">${escapeHtml(statusLabel(order.status))} · ${escapeHtml(fulfillmentLabel(order.fulfillmentType))}</p>
         </div>

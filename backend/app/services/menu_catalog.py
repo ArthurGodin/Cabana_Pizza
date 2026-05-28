@@ -179,6 +179,7 @@ def build_public_pizza_category(
         "label": seed_category["label"],
         "kind": "pizza",
         "prices": {
+            "P": numeric_to_json(prices.get("P")),
             "M": numeric_to_json(prices.get("M")),
             "G": numeric_to_json(prices.get("G")),
             "GG": numeric_to_json(prices.get("GG")),

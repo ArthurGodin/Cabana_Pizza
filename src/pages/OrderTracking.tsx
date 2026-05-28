@@ -21,7 +21,7 @@ export default function OrderTrackingPage() {
         <header className="mb-6 flex items-center justify-between gap-4">
           <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground">
             <Home className="h-4 w-4" />
-            Cabana da Pizza
+            Pizzaria Mesa 10
           </Link>
           <span className="rounded-full border border-border bg-surface/70 px-3 py-1 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
             Acompanhamento

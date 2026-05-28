@@ -63,29 +63,48 @@ def get_orders_dashboard(
     orders = db.scalars(query).all()
 
     total_orders = len(orders)
-    gross_revenue = sum((order.total for order in orders), Decimal("0"))
+    valid_orders = [order for order in orders if order.status != OrderStatus.CANCELLED]
+    active_statuses = {
+        OrderStatus.PENDING,
+        OrderStatus.CONFIRMED,
+        OrderStatus.PREPARING,
+        OrderStatus.OUT_FOR_DELIVERY,
+    }
+    gross_revenue = sum((order.total for order in valid_orders), Decimal("0"))
     completed_revenue = sum(
-        (order.total for order in orders if order.status == OrderStatus.COMPLETED),
+        (order.total for order in valid_orders if order.status == OrderStatus.COMPLETED),
         Decimal("0"),
     )
-    average_ticket = gross_revenue / total_orders if total_orders else Decimal("0")
+    active_revenue = sum(
+        (order.total for order in valid_orders if order.status in active_statuses),
+        Decimal("0"),
+    )
+    cancelled_revenue = sum(
+        (order.total for order in orders if order.status == OrderStatus.CANCELLED),
+        Decimal("0"),
+    )
+    average_ticket = gross_revenue / len(valid_orders) if valid_orders else Decimal("0")
 
     return AdminOrdersDashboardResponse(
         totalOrders=total_orders,
+        validOrders=len(valid_orders),
         pendingOrders=count_by_status(orders, OrderStatus.PENDING),
         confirmedOrders=count_by_status(orders, OrderStatus.CONFIRMED),
         preparingOrders=count_by_status(orders, OrderStatus.PREPARING),
         outForDeliveryOrders=count_by_status(orders, OrderStatus.OUT_FOR_DELIVERY),
         completedOrders=count_by_status(orders, OrderStatus.COMPLETED),
         cancelledOrders=count_by_status(orders, OrderStatus.CANCELLED),
-        deliveryOrders=sum(1 for order in orders if order.fulfillment_type == FulfillmentType.DELIVERY),
-        pickupOrders=sum(1 for order in orders if order.fulfillment_type == FulfillmentType.PICKUP),
+        deliveryOrders=sum(1 for order in valid_orders if order.fulfillment_type == FulfillmentType.DELIVERY),
+        pickupOrders=sum(1 for order in valid_orders if order.fulfillment_type == FulfillmentType.PICKUP),
         grossRevenue=gross_revenue,
         completedRevenue=completed_revenue,
+        activeRevenue=active_revenue,
+        cancelledRevenue=cancelled_revenue,
         averageTicket=average_ticket,
         topProducts=build_top_products(orders),
         topNeighborhoods=build_top_neighborhoods(orders),
         busyHours=build_busy_hours(orders),
+        revenueByStatus=build_revenue_by_status(orders),
     )
 
 
@@ -339,6 +358,27 @@ def build_busy_hours(orders: list[Order]) -> list[dict[str, int | str]]:
         totals[label] = totals.get(label, 0) + 1
 
     return build_rank_output(totals, limit=5)
+
+
+def build_revenue_by_status(orders: list[Order]) -> list[dict[str, Decimal | str]]:
+    labels = {
+        OrderStatus.PENDING: "Pendentes",
+        OrderStatus.CONFIRMED: "Confirmados",
+        OrderStatus.PREPARING: "Preparando",
+        OrderStatus.OUT_FOR_DELIVERY: "Na entrega",
+        OrderStatus.COMPLETED: "Concluidos",
+        OrderStatus.CANCELLED: "Cancelados",
+    }
+    totals = {status: Decimal("0") for status in labels}
+
+    for order in orders:
+        totals[order.status] = totals.get(order.status, Decimal("0")) + order.total
+
+    return [
+        {"label": label, "value": totals[status]}
+        for status, label in labels.items()
+        if totals[status] > 0
+    ]
 
 
 def build_rank_output(totals: dict[str, int], *, limit: int) -> list[dict[str, int | str]]:

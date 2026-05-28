@@ -43,6 +43,7 @@ from app.schemas.loyalty import (
     LoyaltyRedemptionCreateInput,
     LoyaltyRedemptionCreateResponse,
 )
+from app.schemas.store import StoreStatusOutput, StoreStatusUpdateInput
 from app.services.admin_auth import login_admin
 from app.services.admin_catalog import (
     read_admin_catalog,
@@ -63,6 +64,7 @@ from app.services.admin_orders import (
 )
 from app.core.config import get_settings
 from app.services.loyalty import create_loyalty_redemption, list_loyalty_customers
+from app.services.store_settings import read_store_status, update_store_status
 
 router = APIRouter(prefix="/admin")
 
@@ -128,6 +130,24 @@ def read_admin_orders_dashboard(
 ) -> AdminOrdersDashboardResponse:
     _ = current_admin
     return get_orders_dashboard(db, date_from=date_from, date_to=date_to)
+
+
+@router.get("/store/status", response_model=StoreStatusOutput)
+def read_admin_store_status(
+    db: Session = Depends(get_db),
+    current_admin: AdminUser = Depends(get_current_admin),
+) -> StoreStatusOutput:
+    _ = current_admin
+    return read_store_status(db)
+
+
+@router.patch("/store/status", response_model=StoreStatusOutput)
+def patch_admin_store_status(
+    payload: StoreStatusUpdateInput,
+    db: Session = Depends(get_db),
+    current_admin: AdminUser = Depends(get_current_admin),
+) -> StoreStatusOutput:
+    return update_store_status(db, payload=payload, current_admin=current_admin)
 
 
 @router.get("/loyalty", response_model=LoyaltyCustomerListResponse)

@@ -1,5 +1,6 @@
 import { ArrowRight, Search } from "lucide-react";
 import { useMemo, useState } from "react";
+import { BigExagerada } from "@/components/cabana/BigExagerada";
 import { CartSheet } from "@/components/cabana/CartSheet";
 import { Header } from "@/components/cabana/Header";
 import { Hero } from "@/components/cabana/Hero";
@@ -47,13 +48,6 @@ function Page() {
         title: "Pizzas Especiais",
         description: "Combinações exclusivas para quem busca sair do comum.",
         products: byCategory("Especial"),
-      },
-      {
-        id: "premium",
-        eyebrow: "Pizzas premium",
-        title: "Pizzas Premium",
-        description: "Nossa assinatura gastronômica com ingredientes nobres.",
-        products: byCategory("Premium"),
       },
       {
         id: "doces",
@@ -116,9 +110,9 @@ function Page() {
       target: "mais-pedidos",
     },
     {
-      title: "Premium da casa",
+      title: "Especiais da casa",
       description: "Receitas mais elaboradas e cheias de assinatura.",
-      target: "premium",
+      target: "especiais",
     },
     {
       title: "Feche com doce",
@@ -169,6 +163,8 @@ function Page() {
         <SocialProof />
 
         <MostOrdered onAdd={openProduct} />
+
+        <BigExagerada />
 
         <section id="menu" className="pb-28 pt-8 md:pb-24">
           <div className="container">
@@ -268,11 +264,11 @@ function Page() {
         </section>
 
         <footer className="border-t border-border/60 py-10 text-center text-xs text-muted-foreground">
-          <p className="mb-1 font-display text-base text-foreground">Cabana da Pizza</p>
-          <p>Tradição na lenha. Paciência na massa. Entrega em toda Timon.</p>
+          <p className="mb-1 font-display text-base text-foreground">Pizzaria Mesa 10</p>
+          <p>A pizzaria mais bem avaliada de Timon. Salão, bar e entrega.</p>
           <p className="mt-2">WhatsApp oficial: {formatWhatsappDisplay(brand.whatsappNumber)}</p>
           <p className="mt-1">{storeHoursSummary}</p>
-          <p className="mt-3">© {new Date().getFullYear()} Cabana da Pizza · Todos os direitos reservados</p>
+          <p className="mt-3">© {new Date().getFullYear()} Pizzaria Mesa 10 · Todos os direitos reservados</p>
         </footer>
       </main>
 

@@ -1,6 +1,6 @@
-# Cabana da Pizza
+# Pizzaria Mesa 10
 
-Sistema de delivery para a Cabana da Pizza, com site público, carrinho, envio estruturado para WhatsApp, backend FastAPI, painel administrativo e controle operacional de pedidos.
+Sistema de delivery para a Pizzaria Mesa 10, com site público, carrinho, envio estruturado para WhatsApp, backend FastAPI, painel administrativo e controle operacional de pedidos.
 
 ## Estrutura
 

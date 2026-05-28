@@ -94,6 +94,7 @@ class OrderItemInput(BaseModel):
 class OrderSummaryInput(BaseModel):
     item_count: PositiveQuantityField = Field(alias="itemCount")
     subtotal: MoneyField
+    delivery_fee: MoneyField = Field(default=Decimal("0.00"), alias="deliveryFee")
     total: MoneyField
 
     model_config = ConfigDict(populate_by_name=True)
@@ -141,6 +142,8 @@ class OrderCreateResponse(BaseModel):
     id: int
     public_id: UUID = Field(alias="publicId")
     status: OrderStatus
+    subtotal: Decimal
+    delivery_fee: Decimal = Field(alias="deliveryFee")
     total: Decimal
     created_at: datetime = Field(alias="createdAt")
     loyalty: LoyaltySummaryOutput | None = None

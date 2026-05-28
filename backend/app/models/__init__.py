@@ -9,6 +9,7 @@ from app.models.loyalty_redemption import LoyaltyRedemption
 from app.models.pizza_category_price import PizzaCategoryPrice
 from app.models.product import Product
 from app.models.product_option import ProductOption
+from app.models.store_setting import StoreSetting
 
 __all__ = [
     "AdminUser",
@@ -22,4 +23,5 @@ __all__ = [
     "PizzaCategoryPrice",
     "Product",
     "ProductOption",
+    "StoreSetting",
 ]

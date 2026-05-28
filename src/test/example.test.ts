@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Product } from "@/data/menu";
 import { getDeliveryCoverage } from "@/lib/delivery-coverage";
+import { calculateDemoDeliveryFee } from "@/lib/delivery-fees";
 import { productMatchesQuery } from "@/lib/menu-search";
 import { getShortOrderReference } from "@/lib/order-api";
 import {
@@ -172,6 +173,7 @@ describe("operational order flow", () => {
       },
       items: [makeCartItem({ note: "Sem cebola." })],
       total: 42,
+      deliveryFee: 6,
     });
 
     const message = buildWhatsAppMessage(payload, formatBRL, {
@@ -187,7 +189,9 @@ describe("operational order flow", () => {
     expect(message).toContain("Observacao do item: Sem cebola.");
     expect(message).toContain("Valor: R$\u00a042");
     expect(message).toContain("*RESUMO DO PEDIDO*");
-    expect(message).toContain("Total: *R$\u00a042*");
+    expect(message).toContain("Subtotal: R$\u00a042");
+    expect(message).toContain("Entrega estimada: R$\u00a06");
+    expect(message).toContain("Total: *R$\u00a048*");
     expect(message).toContain("*DADOS DO CLIENTE*");
     expect(message).toContain("*ENTREGA*");
     expect(message).toContain("CEP: 65630-120");
@@ -199,12 +203,30 @@ describe("operational order flow", () => {
     expect(message).toContain("*OBSERVACOES GERAIS*");
     expect(message).toContain("Fico no aguardo da confirmacao e do prazo estimado. Obrigado.");
     expect(url).toContain("wa.me/5599982599575");
-    expect(url).toContain(encodeURIComponent("Ola, Cabana da Pizza."));
+    expect(url).toContain(encodeURIComponent("Ola, Pizzaria Mesa 10."));
   });
 
   it("formats integer currency values without cents", () => {
     expect(formatBRL(42)).toBe("R$\u00a042");
     expect(formatBRL(42.5)).toBe("R$\u00a042,50");
+  });
+
+  it("calculates demo delivery fee by Timon neighborhood", () => {
+    expect(
+      calculateDemoDeliveryFee({
+        ...checkoutDefaults,
+        fulfillment: "delivery",
+        neighborhood: "Parque Piauí I",
+      }),
+    ).toBe(8);
+
+    expect(
+      calculateDemoDeliveryFee({
+        ...checkoutDefaults,
+        fulfillment: "pickup",
+        neighborhood: "Centro",
+      }),
+    ).toBe(0);
   });
 
   it("formats and normalizes CEP values for lookup", () => {

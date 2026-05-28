@@ -56,6 +56,7 @@ def read_admin_catalog(db: Session) -> AdminCatalogResponse:
                 categoryCode=category.code,
                 categoryName=category.name,
                 prices={
+                    "P": pizza_price_map.get(category.id, {}).get("P", Decimal("0.00")),
                     "M": pizza_price_map.get(category.id, {}).get("M", Decimal("0.00")),
                     "G": pizza_price_map.get(category.id, {}).get("G", Decimal("0.00")),
                     "GG": pizza_price_map.get(category.id, {}).get("GG", Decimal("0.00")),
@@ -65,6 +66,7 @@ def read_admin_catalog(db: Session) -> AdminCatalogResponse:
             if category.product_type == ProductType.PIZZA
         ],
         crustPrices=AdminCrustPriceTableOutput(
+            P=crust_price_map.get("P", Decimal("0.00")),
             M=crust_price_map.get("M", Decimal("0.00")),
             G=crust_price_map.get("G", Decimal("0.00")),
             GG=crust_price_map.get("GG", Decimal("0.00")),
@@ -246,6 +248,7 @@ def update_pizza_base_prices(
     ).all()
     rows_by_size = {row.size.value: row for row in existing_rows}
     incoming = {
+        "P": payload.price_p,
         "M": payload.price_m,
         "G": payload.price_g,
         "GG": payload.price_gg,
@@ -282,6 +285,7 @@ def update_crust_price_table(
     existing_rows = db.scalars(select(CrustPrice)).all()
     rows_by_size = {row.size.value: row for row in existing_rows}
     incoming = {
+        "P": payload.price_p,
         "M": payload.price_m,
         "G": payload.price_g,
         "GG": payload.price_gg,

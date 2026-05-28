@@ -3,9 +3,9 @@ requires = ["setuptools>=78.1.1", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "cabana-pizza-backend"
+name = "mesa10-pizza-backend"
 version = "0.1.0"
-description = "Backend API for Cabana da Pizza"
+description = "Backend API for Pizzaria Mesa 10"
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
 dependencies = [

@@ -16,12 +16,12 @@ DEFAULT_CORS_ORIGINS = [
 
 
 class Settings(BaseSettings):
-    app_name: str = "Cabana da Pizza API"
+    app_name: str = "Pizzaria Mesa 10 API"
     app_env: str = "development"
     app_host: str = "127.0.0.1"
     app_port: int = 8000
     api_v1_prefix: str = "/api"
-    database_url: str = "postgresql+psycopg://postgres:postgres@127.0.0.1:5432/cabana_pizza"
+    database_url: str = "postgresql+psycopg://postgres:postgres@127.0.0.1:5432/mesa10_pizza"
     database_connect_timeout: int = 3
     cors_origins: str = ",".join(DEFAULT_CORS_ORIGINS)
     cors_origin_regex: str | None = None
@@ -35,6 +35,11 @@ class Settings(BaseSettings):
     media_root: str = str(Path(__file__).resolve().parents[2] / "media")
     media_url_prefix: str = "/media"
     media_max_upload_mb: int = 5
+    media_storage_provider: str = "local"
+    supabase_url: str = ""
+    supabase_service_role_key: str = ""
+    supabase_storage_bucket: str = "mesa10-products"
+    supabase_storage_path_prefix: str = "products"
 
     model_config = SettingsConfigDict(
         env_file=ENV_FILE,

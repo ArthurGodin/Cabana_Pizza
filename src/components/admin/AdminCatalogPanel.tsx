@@ -693,8 +693,8 @@ export function AdminCatalogPanel({ token }: { token: string }) {
                   Upload opcional
                 </p>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Se quiser sair do banco de imagens local, envie uma foto aqui. O backend vai devolver um caminho
-                  publico e esse produto passa a usar essa imagem.
+                  Envie uma foto para o produto. Em producao, configure Supabase Storage para manter
+                  a imagem permanente mesmo quando o backend reiniciar.
                 </p>
 
                 <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -979,8 +979,8 @@ export function AdminCatalogPanel({ token }: { token: string }) {
                   </button>
                 </div>
 
-                <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                  {(["M", "G", "GG"] as const).map((sizeKey) => (
+                <div className="mt-4 grid gap-3 grid-cols-2 sm:grid-cols-4">
+                  {(["P", "M", "G", "GG"] as const).map((sizeKey) => (
                     <label key={sizeKey} className="space-y-2">
                       <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                         {sizeKey}
@@ -1018,8 +1018,8 @@ export function AdminCatalogPanel({ token }: { token: string }) {
             </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3">
-            {(["M", "G", "GG"] as const).map((sizeKey) => (
+          <div className="grid gap-3 grid-cols-2 sm:grid-cols-4">
+            {(["P", "M", "G", "GG"] as const).map((sizeKey) => (
               <label key={sizeKey} className="space-y-2">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   {sizeKey}

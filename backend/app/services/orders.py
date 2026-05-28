@@ -13,6 +13,7 @@ from app.models.enums import PizzaSize, ProductType
 from app.models.order import Order
 from app.models.order_item import OrderItem
 from app.schemas.order import OrderCreateInput, OrderItemInput, OrderTrackingItemOutput, OrderTrackingResponse
+from app.services.delivery_fees import calculate_delivery_fee
 
 ZERO = Decimal("0.00")
 
@@ -37,7 +38,12 @@ def create_order(db: Session, payload: OrderCreateInput) -> Order:
         for item in payload.items
     ]
     subtotal = quantize(sum((item.line_total for item in resolved_items), ZERO))
-    delivery_fee = ZERO
+    delivery_fee = quantize(
+        calculate_delivery_fee(
+            fulfillment_type=payload.fulfillment.type,
+            neighborhood=payload.fulfillment.neighborhood,
+        ),
+    )
     total = quantize(subtotal + delivery_fee)
 
     order = Order(

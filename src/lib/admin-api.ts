@@ -1,6 +1,6 @@
 import { getApiBaseUrl } from "@/lib/api-base-url";
 
-const ADMIN_AUTH_STORAGE_KEY = "cabana.admin.accessToken";
+const ADMIN_AUTH_STORAGE_KEY = "mesa10.admin.accessToken";
 
 export interface AdminUser {
   id: number;
@@ -90,6 +90,7 @@ export interface AdminOrderFilters {
 
 export interface AdminOrdersDashboard {
   totalOrders: number;
+  validOrders: number;
   pendingOrders: number;
   confirmedOrders: number;
   preparingOrders: number;
@@ -100,15 +101,35 @@ export interface AdminOrdersDashboard {
   pickupOrders: number;
   grossRevenue: string;
   completedRevenue: string;
+  activeRevenue: string;
+  cancelledRevenue: string;
   averageTicket: string;
   topProducts: AdminDashboardRankItem[];
   topNeighborhoods: AdminDashboardRankItem[];
   busyHours: AdminDashboardRankItem[];
+  revenueByStatus: AdminDashboardMoneyRankItem[];
 }
 
 export interface AdminDashboardRankItem {
   label: string;
   value: number;
+}
+
+export interface AdminDashboardMoneyRankItem {
+  label: string;
+  value: string;
+}
+
+export interface StoreStatus {
+  isOrderingPaused: boolean;
+  pauseReason: string | null;
+  acceptsOrders: boolean;
+  updatedAt: string | null;
+}
+
+export interface StoreStatusUpdateInput {
+  isOrderingPaused: boolean;
+  pauseReason?: string | null;
 }
 
 export interface AdminLoyaltySummary {
@@ -342,6 +363,17 @@ export async function fetchAdminOrdersDashboard(
     `/api/admin/orders/dashboard${buildOrdersDashboardQueryString(filters)}`,
     token,
   );
+}
+
+export async function fetchAdminStoreStatus(token: string) {
+  return adminFetch<StoreStatus>("/api/admin/store/status", token);
+}
+
+export async function updateAdminStoreStatus(token: string, payload: StoreStatusUpdateInput) {
+  return adminFetch<StoreStatus>("/api/admin/store/status", token, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
 }
 
 export async function fetchAdminCatalog(token: string) {

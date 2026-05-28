@@ -1,29 +1,31 @@
-﻿{
+{
   "brand": {
-    "name": "Cabana da Pizza",
+    "name": "Pizzaria Mesa 10",
     "city": "Timon",
     "state": "MA",
-    "menuYear": 2025,
-    "whatsappNumber": "5586994780814"
+    "menuYear": 2026,
+    "whatsappNumber": "5586988180596"
   },
   "sizes": [
+    { "key": "P", "label": "Pequena", "slices": "4 fatias" },
     { "key": "M", "label": "Média", "slices": "6 fatias" },
     { "key": "G", "label": "Grande", "slices": "8 fatias" },
-    { "key": "GG", "label": "Família", "slices": "10 fatias" }
+    { "key": "GG", "label": "Gigante", "slices": "10 fatias" }
   ],
   "edges": [
     { "id": "none", "name": "Sem borda recheada", "description": "Borda tradicional crocante." },
-    { "id": "original", "name": "Original", "description": "Recheio tradicional." },
-    { "id": "cream-cheese", "name": "Cream Cheese", "description": "Mais cremosa e suave." },
-    { "id": "chocolate", "name": "Chocolate", "description": "Indicada para pizzas doces." }
+    { "id": "catupiry", "name": "Catupiry", "description": "Recheio cremoso clássico." },
+    { "id": "cheddar", "name": "Cheddar", "description": "Recheio de cheddar derretido." }
   ],
   "edgePriceBySize": {
+    "P": 8,
     "M": 10,
     "G": 12,
-    "GG": 15
+    "GG": 13
   },
   "deliveryNeighborhoods": [
     "Centro",
+    "Santo Antônio",
     "Cidade Nova",
     "Parque Piauí I",
     "Parque Piauí II",
@@ -49,296 +51,192 @@
   ],
   "categories": [
     {
+      "id": "especial",
+      "label": "Especial",
+      "kind": "pizza",
+      "prices": { "P": 49, "M": 60, "G": 72, "GG": 86 },
+      "items": [
+        {
+          "id": "lombo-canadense",
+          "name": "Lombo Canadense",
+          "description": "Molho, mussarela, lombo canadense, queijo coalho, azeitona e orégano.",
+          "imageKey": "bacon",
+          "popular": true,
+          "badge": "Da casa"
+        },
+        {
+          "id": "gostosissima",
+          "name": "Gostosíssima",
+          "description": "Molho, mussarela, presunto, bacon, calabresa, cheddar e orégano.",
+          "imageKey": "frango-bacon",
+          "popular": true,
+          "badge": "Mais pedida"
+        },
+        {
+          "id": "sensacoes",
+          "name": "Sensações",
+          "description": "Molho, mussarela, frango, catupiry, milho, pimenta e orégano.",
+          "imageKey": "frango-catupiry"
+        },
+        {
+          "id": "cremosa",
+          "name": "Cremosa",
+          "description": "Molho, mussarela, frango, catupiry, cream cheese e orégano.",
+          "imageKey": "frango-catupiry"
+        }
+      ]
+    },
+    {
       "id": "tradicional",
       "label": "Tradicional",
       "kind": "pizza",
-      "prices": { "M": 42, "G": 48, "GG": 56 },
+      "prices": { "P": 43, "M": 56, "G": 65, "GG": 78 },
       "items": [
         {
-          "id": "atum",
-          "name": "Atum",
-          "description": "Molho, Mussarela, Atum, Cebola, Azeitona e Orégano.",
-          "imageKey": "mussarela"
-        },
-        {
-          "id": "bacon",
-          "name": "Bacon",
-          "description": "Molho, Mussarela, Bacon, Azeitona e Orégano.",
-          "imageKey": "bacon",
-          "popular": true,
-          "badge": "Destaque"
-        },
-        {
-          "id": "baiana",
-          "name": "Baiana",
-          "description": "Molho, Mussarela, Calabresa ralada, Pimenta Calabresa, Azeitona e Orégano.",
-          "imageKey": "baiana"
-        },
-        {
-          "id": "bauru",
-          "name": "Bauru",
-          "description": "Molho, Presunto, Tomate, Mussarela, Azeitona e Orégano.",
+          "id": "mussarela",
+          "name": "Mussarela",
+          "description": "Molho, mussarela, azeitona e orégano.",
           "imageKey": "mussarela"
         },
         {
           "id": "calabresa",
           "name": "Calabresa",
-          "description": "Molho, Mussarela, Calabresa, Cebola, Azeitona e Orégano.",
+          "description": "Molho, mussarela, calabresa, cebola, azeitona e orégano.",
           "imageKey": "calabresa",
-          "popular": true,
-          "badge": "Da casa"
-        },
-        {
-          "id": "cheddar",
-          "name": "Cheddar",
-          "description": "Molho, Mussarela, Cheddar, Palmito, Azeitona e Orégano.",
-          "imageKey": "mussarela"
-        },
-        {
-          "id": "dois-queijos",
-          "name": "Dois Queijos",
-          "description": "Molho, Mussarela, Catupiry, Azeitona e Orégano.",
-          "imageKey": "mussarela"
-        },
-        {
-          "id": "margherita",
-          "name": "Margherita",
-          "description": "Molho, Mussarela, Fatia de Tomate, Parmesão, Azeitona e Orégano.",
-          "imageKey": "margherita",
           "popular": true,
           "badge": "Clássica"
         },
         {
-          "id": "mussarela",
-          "name": "Mussarela",
-          "description": "Molho, Mussarela, Azeitona e Orégano.",
-          "imageKey": "mussarela"
-        }
-      ]
-    },
-    {
-      "id": "especial",
-      "label": "Especial",
-      "kind": "pizza",
-      "prices": { "M": 46, "G": 52, "GG": 60 },
-      "items": [
-        {
-          "id": "alpina",
-          "name": "Alpina",
-          "description": "Molho, Mussarela, Palmito, Bacon, Provolone, Azeitona e Orégano.",
+          "id": "bacon",
+          "name": "Bacon",
+          "description": "Molho, mussarela, bacon, tomate e orégano.",
           "imageKey": "bacon"
         },
         {
-          "id": "balacubana",
-          "name": "Balacubana",
-          "description": "Molho, Presunto, Frango, Bacon, Mussarela, Azeitona e Orégano.",
-          "imageKey": "frango-bacon"
-        },
-        {
-          "id": "baianinha",
-          "name": "Baianinha",
-          "description": "Molho, Mussarela, Calabresa ralada, Ovos, Cebola, Pimenta Calabresa, Azeitona e Orégano.",
-          "imageKey": "baiana"
-        },
-        {
-          "id": "calabresa-com-cream-cheese",
-          "name": "Calabresa com Cream Cheese",
-          "description": "Molho, Mussarela, Calabresa, Cream Cheese, Cebola, Azeitona e Orégano.",
-          "imageKey": "calabresa"
-        },
-        {
-          "id": "caipira",
-          "name": "Caipira",
-          "description": "Molho, Frango Desfiado, Mussarela, Milho Verde, Catupiry, Azeitona e Orégano.",
+          "id": "frango",
+          "name": "Frango",
+          "description": "Molho, mussarela, frango desfiado, azeitona e orégano.",
           "imageKey": "frango-catupiry"
         },
         {
-          "id": "frango-ii",
-          "name": "Frango II",
-          "description": "Molho, Frango, Cebola, Presunto, Ervilha, Mussarela, Azeitona e Orégano.",
-          "imageKey": "frango-catupiry"
-        },
-        {
-          "id": "frango-e-bacon",
-          "name": "Frango e Bacon",
-          "description": "Molho, Mussarela, Frango, Bacon, Azeitona e Orégano.",
-          "imageKey": "frango-bacon",
-          "popular": true,
-          "badge": "Mais pedido"
-        },
-        {
-          "id": "frango-com-catupiry",
-          "name": "Frango com Catupiry",
-          "description": "Molho, Mussarela, Frango, Catupiry, Azeitona e Orégano.",
+          "id": "frango-catupiry",
+          "name": "Frango Catupiry",
+          "description": "Molho, mussarela, frango desfiado, catupiry e orégano.",
           "imageKey": "frango-catupiry",
           "popular": true,
           "badge": "Favorita"
         },
         {
-          "id": "frango-cheddar",
-          "name": "Frango Cheddar",
-          "description": "Molho, Mussarela, Frango, Cheddar, Azeitona e Orégano.",
-          "imageKey": "frango-catupiry"
-        },
-        {
-          "id": "frango-com-abacaxi",
-          "name": "Frango com Abacaxi",
-          "description": "Molho, Mussarela, Frango, Abacaxi, Creme de Leite, Azeitona e Orégano.",
-          "imageKey": "frango-catupiry"
-        },
-        {
-          "id": "italiana",
-          "name": "Italiana",
-          "description": "Molho, Mussarela, Salame, Tomate, Azeitona e Orégano.",
+          "id": "catupepperoni",
+          "name": "Catupepperoni",
+          "description": "Molho, mussarela, pepperoni, catupiry e orégano.",
           "imageKey": "pepperoni"
         },
         {
           "id": "mexicana",
           "name": "Mexicana",
-          "description": "Molho, Presunto, Mussarela, Milho, Bacon, Pimenta, Cebola, Azeitona e Orégano.",
+          "description": "Molho, mussarela, carne moída, pimenta, milho, cebola e orégano.",
           "imageKey": "bacon"
-        },
-        {
-          "id": "moda-da-cabana",
-          "name": "Moda da Cabana",
-          "description": "Molho, Mussarela, Bacon, Tomate, Cebola, Milho, Azeitona e Orégano.",
-          "imageKey": "bacon"
-        },
-        {
-          "id": "moda-da-casa",
-          "name": "Moda da Casa",
-          "description": "Molho, Mussarela, Presunto, Milho, Cebola, Bacon, Azeitona e Orégano.",
-          "imageKey": "portuguesa"
-        },
-        {
-          "id": "pepperoni",
-          "name": "Pepperoni",
-          "description": "Molho, Mussarela, Pepperoni, Azeitona e Orégano.",
-          "imageKey": "pepperoni"
-        },
-        {
-          "id": "portuguesa",
-          "name": "Portuguesa",
-          "description": "Molho, Presunto, Cebola, Ovo, Mussarela, Azeitona e Orégano.",
-          "imageKey": "portuguesa",
-          "popular": true,
-          "badge": "Tradicional"
-        },
-        {
-          "id": "siciliana",
-          "name": "Siciliana",
-          "description": "Molho, Mussarela, Champignon, Bacon, Azeitona e Orégano.",
-          "imageKey": "bacon"
-        },
-        {
-          "id": "tropical",
-          "name": "Tropical",
-          "description": "Molho, Mussarela, Figo, Cereja, Abacaxi e Ameixa.",
-          "imageKey": "banana"
-        },
-        {
-          "id": "tres-queijos",
-          "name": "Três Queijos",
-          "description": "Molho, Mussarela, Catupiry, Parmesão, Azeitona e Orégano.",
-          "imageKey": "quatro-queijos"
-        },
-        {
-          "id": "brocolis-com-bacon",
-          "name": "Brócolis com Bacon",
-          "description": "Molho, Mussarela, Brócolis, Bacon, Azeitona e Orégano.",
-          "imageKey": "bacon"
-        }
-      ]
-    },
-    {
-      "id": "premium",
-      "label": "Premium",
-      "kind": "pizza",
-      "prices": { "M": 50, "G": 56, "GG": 66 },
-      "items": [
-        {
-          "id": "carne-seca-com-banana",
-          "name": "Carne Seca com Banana",
-          "description": "Molho, Mussarela, Carne Seca, Cebola, Banana, Azeitona e Orégano.",
-          "imageKey": "carne-seca"
-        },
-        {
-          "id": "carne-seca-com-champignon",
-          "name": "Carne Seca com Champignon",
-          "description": "Molho, Mussarela, Carne Seca, Cebola, Champignon, Azeitona e Orégano.",
-          "imageKey": "carne-seca"
-        },
-        {
-          "id": "carne-seca-suprema",
-          "name": "Carne Seca Suprema",
-          "description": "Molho, Mussarela, Carne Seca, Cebola, Bacon, Catupiry, Azeitona e Orégano.",
-          "imageKey": "carne-seca",
-          "popular": true,
-          "badge": "Assinatura"
-        },
-        {
-          "id": "delicia",
-          "name": "Delícia",
-          "description": "Molho, Mussarela, Frango Desfiado, Champignon, Catupiry, Parmesão, Palmito, Azeitona e Orégano.",
-          "imageKey": "frango-catupiry"
-        },
-        {
-          "id": "grega",
-          "name": "Grega",
-          "description": "Molho, Mussarela, Ovo, Frango, Bacon, Presunto e Catupiry.",
-          "imageKey": "portuguesa"
-        },
-        {
-          "id": "margherita-especial",
-          "name": "Margherita Especial",
-          "description": "Molho, Mussarela, Tomate, Salame, Pepperoni, Azeitona, Manjericão e Orégano.",
-          "imageKey": "burrata"
         },
         {
           "id": "mista",
           "name": "Mista",
-          "description": "Molho, Mussarela, Frango, Presunto, Tomate, Calabresa, Azeitona e Orégano.",
+          "description": "Molho, mussarela, calabresa, presunto, cebola, tomate e orégano.",
           "imageKey": "portuguesa"
         },
         {
-          "id": "moda-da-casa-suprema",
-          "name": "Moda da Casa Suprema",
-          "description": "Molho, Mussarela, Frango, Bacon, Calabresa, Catupiry, Orégano e Azeitona.",
+          "id": "siciliana",
+          "name": "Siciliana",
+          "description": "Molho, mussarela, calabresa, cebola, azeitona e tomate.",
+          "imageKey": "calabresa"
+        },
+        {
+          "id": "nordestina",
+          "name": "Nordestina",
+          "description": "Molho, mussarela, carne de sol, queijo coalho, cebola e orégano.",
+          "imageKey": "carne-seca",
+          "popular": true,
+          "badge": "Regional"
+        },
+        {
+          "id": "portuguesa",
+          "name": "Portuguesa",
+          "description": "Molho, mussarela, presunto, ovos, cebola, tomate, azeitona e orégano.",
+          "imageKey": "portuguesa"
+        },
+        {
+          "id": "tres-queijos",
+          "name": "3 Queijos",
+          "description": "Molho, mussarela, provolone, catupiry e orégano.",
+          "imageKey": "quatro-queijos"
+        },
+        {
+          "id": "suprema",
+          "name": "Suprema",
+          "description": "Molho, mussarela, provolone, catupiry, parmesão e orégano.",
+          "imageKey": "quatro-queijos"
+        },
+        {
+          "id": "vegetariana",
+          "name": "Vegetariana",
+          "description": "Molho, mussarela, tomate, cebola, pimentão, brócolis, milho, azeitona e orégano.",
+          "imageKey": "margherita"
+        },
+        {
+          "id": "brasileira",
+          "name": "Brasileira",
+          "description": "Molho, mussarela, calabresa, cebola, ovos, azeitona e orégano.",
+          "imageKey": "portuguesa"
+        },
+        {
+          "id": "marguerita",
+          "name": "Marguerita",
+          "description": "Molho, mussarela, tomate, manjericão e orégano.",
+          "imageKey": "margherita",
+          "popular": true,
+          "badge": "Clássica"
+        },
+        {
+          "id": "apresentada",
+          "name": "Apresentada",
+          "description": "Molho, mussarela, presunto, milho, cebola, bacon, catupiry e orégano.",
+          "imageKey": "portuguesa"
+        },
+        {
+          "id": "milho-verde",
+          "name": "Milho Verde",
+          "description": "Molho, mussarela, milho verde, catupiry e orégano.",
+          "imageKey": "mussarela"
+        },
+        {
+          "id": "balacubana",
+          "name": "Balacubana",
+          "description": "Molho, mussarela, presunto, frango, bacon, azeitona e orégano.",
           "imageKey": "frango-bacon"
         },
         {
-          "id": "moda-do-pizzaiolo",
-          "name": "Moda do Pizzaiolo",
-          "description": "Molho, Mussarela, Presunto, Milho, Cebola, Bacon, Catupiry, Azeitona e Orégano.",
-          "imageKey": "portuguesa"
+          "id": "tropical",
+          "name": "Tropical",
+          "description": "Molho, mussarela, frango, abacaxi, catupiry e orégano.",
+          "imageKey": "banana"
         },
         {
-          "id": "portuguesa-especial",
-          "name": "Portuguesa Especial",
-          "description": "Molho, Presunto, Ovo, Cebola, Palmito, Ervilha, Mussarela, Azeitona e Orégano.",
-          "imageKey": "portuguesa"
+          "id": "carioca",
+          "name": "Carioca",
+          "description": "Molho, mussarela, frango, catupiry, milho e orégano.",
+          "imageKey": "frango-catupiry"
         },
         {
-          "id": "portuguesinha",
-          "name": "Portuguesinha",
-          "description": "Molho, Presunto, Milho, Ovo, Cebola, Tomate, Mussarela, Calabresa, Bacon, Azeitona e Orégano.",
-          "imageKey": "portuguesa"
+          "id": "clandestina",
+          "name": "Clandestina",
+          "description": "Molho, mussarela, calabresa, milho, frango, catupiry e orégano.",
+          "imageKey": "frango-bacon"
         },
         {
-          "id": "quatro-queijos",
-          "name": "Quatro Queijos",
-          "description": "Molho, Mussarela, Catupiry, Provolone, Parmesão, Azeitona e Orégano.",
-          "imageKey": "quatro-queijos",
-          "popular": true,
-          "badge": "Premium"
-        },
-        {
-          "id": "requinte",
-          "name": "Requinte",
-          "description": "Molho, Mussarela, Frango Desfiado, Catupiry, Bacon, Milho, Cebola, Azeitona e Orégano.",
-          "imageKey": "truffle",
-          "popular": true,
-          "badge": "Da casa"
+          "id": "california",
+          "name": "Califórnia",
+          "description": "Molho, mussarela, abacaxi, pêssego, banana, cereja e leite condensado.",
+          "imageKey": "banana"
         }
       ]
     },
@@ -346,41 +244,29 @@
       "id": "doce",
       "label": "Doce",
       "kind": "pizza",
-      "prices": { "M": 46, "G": 52, "GG": 60 },
+      "prices": { "P": 43, "M": 56, "G": 65, "GG": 78 },
       "items": [
         {
-          "id": "banana-nevada",
-          "name": "Banana Nevada",
-          "description": "Creme de Leite, Banana, Chocolate Branco, Açúcar e Canela.",
-          "imageKey": "banana-nevada",
+          "id": "chocolate",
+          "name": "Chocolate",
+          "description": "Chocolate ao leite, chocolate branco, granulado e leite condensado.",
+          "imageKey": "chocolate",
           "popular": true,
           "badge": "Sobremesa"
         },
         {
-          "id": "chocolate-mesclado",
-          "name": "Chocolate Mesclado",
-          "description": "Creme de Leite, Chocolate ao Leite e Chocolate Branco.",
-          "imageKey": "chocolate"
-        },
-        {
-          "id": "tres-desejos",
-          "name": "Três Desejos",
-          "description": "Creme de Leite, Chocolate ao Leite, Doce de Leite e Chocolate Branco.",
-          "imageKey": "chocolate"
-        },
-        {
           "id": "romeu-e-julieta",
           "name": "Romeu e Julieta",
-          "description": "Molho, Mussarela, Goiabada e Catupiry.",
+          "description": "Mussarela, goiabada, catupiry e canela.",
           "imageKey": "romeu-julieta",
           "popular": true,
           "badge": "Clássica"
         },
         {
-          "id": "banana-com-mussarela",
-          "name": "Banana com Mussarela",
-          "description": "Molho, Banana, Leite Condensado, Mussarela e Canela.",
-          "imageKey": "banana"
+          "id": "banana-nevada",
+          "name": "Banana Nevada",
+          "description": "Banana, chocolate branco, açúcar, canela e creme de leite.",
+          "imageKey": "banana-nevada"
         }
       ]
     },
@@ -432,15 +318,6 @@
                 { "id": "1-lt", "label": "1 LT", "price": 9 },
                 { "id": "2-lt", "label": "2 LT", "price": 13 }
               ]
-            },
-            {
-              "id": "fanta-uva",
-              "name": "Fanta Uva",
-              "imageKey": "drink-cola",
-              "variants": [
-                { "id": "lata", "label": "Lata", "price": 6 },
-                { "id": "2-lt", "label": "2 LT", "price": 15 }
-              ]
             }
           ]
         },
@@ -460,28 +337,10 @@
               "variants": [{ "id": "unit", "label": "Unidade", "price": 15 }]
             },
             {
-              "id": "spaten",
-              "name": "Spaten",
-              "imageKey": "drink-heineken",
-              "variants": [{ "id": "unit", "label": "Unidade", "price": 14 }]
-            },
-            {
               "id": "brahma-duplo-malte",
               "name": "Brahma Duplo Malte",
               "imageKey": "drink-heineken",
               "variants": [{ "id": "unit", "label": "Unidade", "price": 11 }]
-            },
-            {
-              "id": "skol-puro-malte",
-              "name": "Skol Puro Malte",
-              "imageKey": "drink-heineken",
-              "variants": [{ "id": "unit", "label": "Unidade", "price": 11 }]
-            },
-            {
-              "id": "bohemia",
-              "name": "Bohemia",
-              "imageKey": "drink-heineken",
-              "variants": [{ "id": "unit", "label": "Unidade", "price": 10 }]
             },
             {
               "id": "skol",
@@ -528,57 +387,12 @@
               ]
             },
             {
-              "id": "morango",
-              "name": "Suco de Morango",
-              "imageKey": "drink-suco",
-              "variants": [
-                { "id": "sem-leite", "label": "Sem leite", "price": 8 },
-                { "id": "com-leite", "label": "Com leite", "price": 9 }
-              ]
-            },
-            {
-              "id": "abacaxi-com-hortela",
-              "name": "Suco de Abacaxi c/ Hortelã",
-              "imageKey": "drink-lemonade",
-              "variants": [
-                { "id": "sem-leite", "label": "Sem leite", "price": 6 },
-                { "id": "com-leite", "label": "Com leite", "price": 7 }
-              ]
-            },
-            {
               "id": "acerola",
               "name": "Suco de Acerola",
               "imageKey": "drink-suco",
               "variants": [
                 { "id": "sem-leite", "label": "Sem leite", "price": 6 },
                 { "id": "com-leite", "label": "Com leite", "price": 7 }
-              ]
-            },
-            {
-              "id": "caja",
-              "name": "Suco de Cajá",
-              "imageKey": "drink-suco",
-              "variants": [
-                { "id": "sem-leite", "label": "Sem leite", "price": 6 },
-                { "id": "com-leite", "label": "Com leite", "price": 7 }
-              ]
-            },
-            {
-              "id": "caju",
-              "name": "Suco de Caju",
-              "imageKey": "drink-suco",
-              "variants": [
-                { "id": "sem-leite", "label": "Sem leite", "price": 6 },
-                { "id": "com-leite", "label": "Com leite", "price": 7 }
-              ]
-            },
-            {
-              "id": "goiaba",
-              "name": "Suco de Goiaba",
-              "imageKey": "drink-suco",
-              "variants": [
-                { "id": "sem-leite", "label": "Sem leite", "price": 5 },
-                { "id": "com-leite", "label": "Com leite", "price": 6 }
               ]
             }
           ]
@@ -591,12 +405,6 @@
               "name": "Cajuína",
               "imageKey": "drink-cola",
               "variants": [{ "id": "unit", "label": "Unidade", "price": 14 }]
-            },
-            {
-              "id": "h2o",
-              "name": "H2O",
-              "imageKey": "drink-lemonade",
-              "variants": [{ "id": "unit", "label": "Unidade", "price": 6 }]
             },
             {
               "id": "agua-mineral",

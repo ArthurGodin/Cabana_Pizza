@@ -3,10 +3,22 @@ import { getApiBaseUrl } from "@/lib/api-base-url";
 
 const ORDER_SUBMIT_TIMEOUT_MS = 12_000;
 
+export class OrderApiError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number | null = null,
+  ) {
+    super(message);
+    this.name = "OrderApiError";
+  }
+}
+
 export interface OrderApiResponse {
   id: number;
   publicId: string;
   status: string;
+  subtotal: string;
+  deliveryFee: string;
   total: string;
   createdAt: string;
   loyalty: LoyaltySummary | null;
@@ -54,13 +66,15 @@ export async function submitOrder(payload: OrderPayload): Promise<OrderApiRespon
     });
   } catch (error) {
     if (isAbortError(error)) {
-      throw new Error(
+      throw new OrderApiError(
         "A central demorou para responder. Verifique se a API esta ligada e acessivel no celular.",
+        null,
       );
     }
 
-    throw new Error(
+    throw new OrderApiError(
       "Nao foi possivel conectar com a central. Verifique se a API esta ligada no PC e se o celular acessa a porta 8000.",
+      null,
     );
   } finally {
     window.clearTimeout(timeoutId);
@@ -81,7 +95,7 @@ export async function fetchOrderTracking(publicId: string) {
   const response = await fetch(`${getApiBaseUrl()}/api/orders/${encodeURIComponent(publicId)}/tracking`);
 
   if (!response.ok) {
-    throw new Error(await readOrderApiError(response));
+    throw new OrderApiError(await readOrderApiError(response), response.status);
   }
 
   return (await response.json()) as OrderTrackingResponse;

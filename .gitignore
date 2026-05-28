@@ -34,3 +34,17 @@ __pycache__/
 **/__pycache__/
 *.py[cod]
 *$py.class
+
+# Material de venda e ativos privados (não exponha no GitHub público)
+proposta-mesa10/
+cardapio_mesa10.jpeg
+cardapio_mesa10.*
+APRESENTACAO-EXECUTIVA.md
+INFOS.MD
+PLANO-BACKEND-PAINEL.md
+DEPLOY-CONTROLADO.md
+
+# Claude Code
+skills/
+.claude/
+

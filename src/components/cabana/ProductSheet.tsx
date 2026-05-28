@@ -25,7 +25,7 @@ export function ProductSheet({ product, cartItem = null, onClose }: Props) {
     }
 
     return sizeOptions.filter((option) => {
-      const key = `price${option.key}` as "priceM" | "priceG" | "priceGG";
+      const key = `price${option.key}` as "priceP" | "priceM" | "priceG" | "priceGG";
       return typeof product[key] === "number";
     });
   }, [product, sizeOptions]);
@@ -91,7 +91,7 @@ export function ProductSheet({ product, cartItem = null, onClose }: Props) {
 
   const basePrice = product.isDrink
     ? selectedVariant?.price ?? product.priceUnit ?? 0
-    : (product[`price${size}` as "priceM" | "priceG" | "priceGG"] ?? 0);
+    : (product[`price${size}` as "priceP" | "priceM" | "priceG" | "priceGG"] ?? 0);
 
   const edgePrice = edgeId === "none" || product.isDrink ? 0 : edgePriceBySize[size];
   const edgeName = edgeFlavors.find((edge) => edge.id === edgeId)?.name ?? "Sem borda recheada";
@@ -155,6 +155,7 @@ export function ProductSheet({ product, cartItem = null, onClose }: Props) {
                 height={120}
                 loading="eager"
                 decoding="async"
+                sizes="(min-width: 768px) 112px, (min-width: 390px) 96px, 100vw"
                 className="h-28 w-full rounded-2xl object-cover shadow-card-soft min-[390px]:h-24 min-[390px]:w-24 md:h-28 md:w-28"
               />
 
@@ -207,11 +208,11 @@ export function ProductSheet({ product, cartItem = null, onClose }: Props) {
             ) : (
               <>
                 <Section title="Tamanho">
-                  <div className="grid grid-cols-1 gap-2.5 min-[380px]:grid-cols-3">
+                  <div className="grid grid-cols-2 gap-2.5 min-[480px]:grid-cols-4">
                     {availableSizes.map((option) => {
                       const isActive = size === option.key;
                       const price =
-                        product[`price${option.key}` as "priceM" | "priceG" | "priceGG"] ?? 0;
+                        product[`price${option.key}` as "priceP" | "priceM" | "priceG" | "priceGG"] ?? 0;
 
                       return (
                         <button

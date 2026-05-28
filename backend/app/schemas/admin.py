@@ -118,8 +118,16 @@ class AdminDashboardRankItem(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
 
+class AdminDashboardMoneyRankItem(BaseModel):
+    label: str
+    value: Decimal
+
+    model_config = ConfigDict(populate_by_name=True)
+
+
 class AdminOrdersDashboardResponse(BaseModel):
     total_orders: int = Field(alias="totalOrders")
+    valid_orders: int = Field(alias="validOrders")
     pending_orders: int = Field(alias="pendingOrders")
     confirmed_orders: int = Field(alias="confirmedOrders")
     preparing_orders: int = Field(alias="preparingOrders")
@@ -130,10 +138,13 @@ class AdminOrdersDashboardResponse(BaseModel):
     pickup_orders: int = Field(alias="pickupOrders")
     gross_revenue: Decimal = Field(alias="grossRevenue")
     completed_revenue: Decimal = Field(alias="completedRevenue")
+    active_revenue: Decimal = Field(alias="activeRevenue")
+    cancelled_revenue: Decimal = Field(alias="cancelledRevenue")
     average_ticket: Decimal = Field(alias="averageTicket")
     top_products: list[AdminDashboardRankItem] = Field(alias="topProducts", default_factory=list)
     top_neighborhoods: list[AdminDashboardRankItem] = Field(alias="topNeighborhoods", default_factory=list)
     busy_hours: list[AdminDashboardRankItem] = Field(alias="busyHours", default_factory=list)
+    revenue_by_status: list[AdminDashboardMoneyRankItem] = Field(alias="revenueByStatus", default_factory=list)
 
     model_config = ConfigDict(populate_by_name=True)
 
@@ -209,6 +220,7 @@ class AdminPizzaBasePriceOutput(BaseModel):
 
 
 class AdminCrustPriceTableOutput(BaseModel):
+    P: Decimal
     M: Decimal
     G: Decimal
     GG: Decimal
@@ -329,6 +341,7 @@ class AdminProductCreateInput(BaseModel):
 
 
 class AdminPizzaBasePriceUpdateInput(BaseModel):
+    price_p: CatalogPrice = Field(alias="P")
     price_m: CatalogPrice = Field(alias="M")
     price_g: CatalogPrice = Field(alias="G")
     price_gg: CatalogPrice = Field(alias="GG")
@@ -337,6 +350,7 @@ class AdminPizzaBasePriceUpdateInput(BaseModel):
 
 
 class AdminCrustPriceTableUpdateInput(BaseModel):
+    price_p: CatalogPrice = Field(alias="P")
     price_m: CatalogPrice = Field(alias="M")
     price_g: CatalogPrice = Field(alias="G")
     price_gg: CatalogPrice = Field(alias="GG")

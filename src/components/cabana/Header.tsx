@@ -28,16 +28,16 @@ export function Header({ onCartClick }: Props) {
         <a href="#top" className="group flex items-center gap-2">
           <span className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-gradient shadow-glow md:h-9 md:w-9">
             <span className="font-display text-base font-bold leading-none text-primary-foreground md:text-lg">
-              C
+              M
             </span>
           </span>
 
           <div className="flex flex-col leading-tight">
             <span className="font-display text-[15px] font-semibold tracking-tight md:text-lg">
-              Cabana
+              Mesa 10
             </span>
             <span className="-mt-0.5 text-[10px] uppercase tracking-[0.22em] text-muted-foreground md:text-xs">
-              da Pizza
+              Pizzaria
             </span>
           </div>
         </a>

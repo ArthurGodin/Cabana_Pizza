@@ -66,6 +66,7 @@ export interface OrderPayload {
   summary: {
     itemCount: number;
     subtotal: number;
+    deliveryFee: number;
     total: number;
   };
   notes: string | null;
@@ -161,8 +162,11 @@ export function buildOrderPayload(input: {
   form: CheckoutFormData;
   items: OrderItemLike[];
   total: number;
+  deliveryFee?: number;
 }): OrderPayload {
   const { form, items, total } = input;
+  const deliveryFee = form.fulfillment === "delivery" ? input.deliveryFee ?? 0 : 0;
+  const grandTotal = total + deliveryFee;
 
   return {
     channel: "site",
@@ -200,7 +204,8 @@ export function buildOrderPayload(input: {
     summary: {
       itemCount: items.reduce((sum, item) => sum + item.qty, 0),
       subtotal: total,
-      total,
+      deliveryFee,
+      total: grandTotal,
     },
     notes: safeTrim(form.notes),
   };
@@ -212,7 +217,7 @@ export function buildWhatsAppMessage(
   options?: { orderReference?: string | null; trackingUrl?: string | null },
 ) {
   const lines = [
-    "Ola, Cabana da Pizza.",
+    "Ola, Pizzaria Mesa 10.",
     "Segue meu pedido para confirmacao:",
     "",
     ...(options?.orderReference ? [`Protocolo no site: ${options.orderReference}`, ""] : []),
@@ -242,6 +247,10 @@ export function buildWhatsAppMessage(
       return itemLines;
     }),
     "*RESUMO DO PEDIDO*",
+    `Subtotal: ${formatCurrency(payload.summary.subtotal)}`,
+    ...(payload.fulfillment.type === "delivery"
+      ? [`Entrega estimada: ${formatCurrency(payload.summary.deliveryFee)}`]
+      : []),
     `Total: *${formatCurrency(payload.summary.total)}*`,
     "",
     "*DADOS DO CLIENTE*",

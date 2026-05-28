@@ -24,7 +24,7 @@ import drinkLemonade from "@/assets/drink-lemonade.jpg";
 import drinkSuco from "@/assets/drink-suco.jpg";
 
 export type Category = "Tradicional" | "Especial" | "Premium" | "Doce" | "Bebidas";
-export type SizeKey = "M" | "G" | "GG";
+export type SizeKey = "P" | "M" | "G" | "GG";
 
 export interface DrinkVariant {
   id: string;
@@ -38,6 +38,7 @@ export interface Product {
   description: string;
   category: Category;
   image: string;
+  priceP?: number;
   priceM?: number;
   priceG?: number;
   priceGG?: number;
@@ -158,55 +159,7 @@ export const imageAssetKeys = Object.keys(imageMap) as Array<keyof typeof imageM
 export const pizzaImageKeys = imageAssetKeys.filter((key) => !key.startsWith("drink-"));
 export const drinkImageKeys = imageAssetKeys.filter((key) => key.startsWith("drink-"));
 
-const pizzaDescriptionOverrides: Record<string, string> = {
-  atum: "Molho artesanal, mussarela, atum selecionado, cebola fresca, azeitonas e orégano.",
-  bacon: "Mussarela derretida, bacon dourado, azeitonas e toque de orégano sobre molho artesanal.",
-  baiana: "Calabresa ralada com pimenta calabresa, mussarela e molho artesanal para um sabor marcante.",
-  bauru: "Presunto, tomate, mussarela e azeitonas sobre molho artesanal e massa leve.",
-  calabresa: "Calabresa fatiada, cebola, mussarela e azeitonas sobre molho artesanal.",
-  cheddar: "Mussarela, cheddar cremoso, palmito e azeitonas em uma combinação clássica e indulgente.",
-  "dois-queijos": "Mussarela e Catupiry sobre molho artesanal, finalizados com azeitonas e orégano.",
-  margherita: "Molho artesanal, mussarela premium, rodelas de tomate, parmesão e orégano.",
-  mussarela: "A combinação essencial: molho artesanal, muita mussarela, azeitonas e orégano.",
-  alpina: "Palmito, bacon crocante e provolone sobre uma base generosa de mussarela.",
-  balacubana: "Presunto, frango desfiado, bacon e mussarela em uma pizza farta e cheia de sabor.",
-  baianinha: "Calabresa ralada, ovos, cebola e pimenta calabresa para um toque intenso.",
-  "calabresa-com-cream-cheese": "Calabresa e cebola com cream cheese, unindo cremosidade e sabor marcante.",
-  caipira: "Frango desfiado, milho verde e Catupiry em uma combinação cremosa e reconfortante.",
-  "frango-ii": "Frango, presunto, cebola, ervilha e mussarela para quem gosta de recheio generoso.",
-  "frango-e-bacon": "Frango desfiado e bacon sobre mussarela derretida e molho artesanal.",
-  "frango-com-catupiry": "Frango desfiado com o legítimo Catupiry sobre uma base clássica de mussarela.",
-  "frango-cheddar": "Frango desfiado e cheddar cremoso em uma pizza intensa e muito saborosa.",
-  "frango-com-abacaxi": "Frango, abacaxi e creme de leite para um equilíbrio entre cremosidade e frescor.",
-  italiana: "Salame, tomate e mussarela sobre molho artesanal, finalizados com azeitonas e orégano.",
-  mexicana: "Presunto, milho, bacon, cebola e pimenta em uma combinação vibrante e encorpada.",
-  "moda-da-cabana": "Bacon, tomate, cebola e milho sobre mussarela para um sabor marcante da casa.",
-  "moda-da-casa": "Presunto, milho, cebola e bacon com mussarela derretida e toque artesanal.",
-  pepperoni: "Pepperoni sobre mussarela premium, com azeitonas e orégano para realçar o sabor.",
-  portuguesa: "Presunto, cebola, ovo e mussarela em um clássico que nunca falha.",
-  siciliana: "Champignon e bacon sobre mussarela e molho artesanal, com final elegante de orégano.",
-  tropical: "Figo, cereja, abacaxi e ameixa em uma combinação surpreendente e agridoce.",
-  "tres-queijos": "Mussarela, Catupiry e parmesão em uma pizza cremosa, intensa e muito aromática.",
-  "brocolis-com-bacon": "Brócolis e bacon sobre mussarela derretida, com equilíbrio entre frescor e sabor.",
-  "carne-seca-com-banana": "Carne seca desfiada, banana e cebola em um contraste agridoce cheio de personalidade.",
-  "carne-seca-com-champignon": "Carne seca desfiada e champignon sobre mussarela, com sabor intenso e elegante.",
-  "carne-seca-suprema": "Carne seca desfiada com o legítimo Catupiry, bacon e cebola sobre massa crocante.",
-  delicia: "Frango desfiado, champignon, Catupiry, parmesão e palmito em uma receita rica e cremosa.",
-  grega: "Ovo, frango, bacon, presunto e Catupiry em uma combinação farta e marcante.",
-  "margherita-especial": "Tomate, salame, pepperoni e manjericão sobre mussarela, com final aromático de orégano.",
-  mista: "Frango, presunto, tomate e calabresa sobre mussarela para quem gosta de variedade.",
-  "moda-da-casa-suprema": "Frango, bacon, calabresa e Catupiry em uma composição robusta e indulgente.",
-  "moda-do-pizzaiolo": "Presunto, milho, cebola, bacon e Catupiry em uma receita generosa da casa.",
-  "portuguesa-especial": "Presunto, ovo, cebola, palmito, ervilha e mussarela em uma versão ainda mais completa da portuguesa.",
-  portuguesinha: "Presunto, milho, ovo, cebola, tomate, calabresa e bacon em um recheio abundante.",
-  "quatro-queijos": "Mussarela, Catupiry, provolone e parmesão para uma experiência cremosa e intensa.",
-  requinte: "Frango desfiado, Catupiry, bacon, milho e cebola em uma receita sofisticada e muito suculenta.",
-  "banana-nevada": "Banana, chocolate branco, açúcar e canela sobre creme de leite, com final delicado.",
-  "chocolate-mesclado": "Chocolate ao leite e chocolate branco sobre creme de leite para os apaixonados por doçura.",
-  "tres-desejos": "Chocolate ao leite, doce de leite e chocolate branco em uma sobremesa generosa.",
-  "romeu-e-julieta": "Goiabada e Catupiry sobre mussarela, no clássico encontro do doce com o cremoso.",
-  "banana-com-mussarela": "Banana, leite condensado, mussarela e canela em um sabor doce e reconfortante.",
-};
+const pizzaDescriptionOverrides: Record<string, string> = {};
 
 const drinkDescriptionOverrides: Record<string, string> = {
   "coca-cola": "Disponível em lata, 1 litro, 2 litros e versão Zero 1 litro.",
@@ -270,6 +223,7 @@ export function buildMenuCatalog(rawMenu: RawMenuData): MenuCatalog {
         description: resolvePizzaDescription(item),
         category: repairText(category.label) as Category,
         image: resolveImage(item.imageKey),
+        priceP: category.prices.P,
         priceM: category.prices.M,
         priceG: category.prices.G,
         priceGG: category.prices.GG,
