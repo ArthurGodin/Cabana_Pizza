@@ -1248,49 +1248,87 @@ function StoreOperationsCard({
 }
 
 function DashboardCharts({ stats }: { stats: DashboardStats }) {
-  const statusData = [
+  const STATUS_SEGMENTS = [
     { name: "Pendentes", value: stats.pendingOrders, color: "#f59e0b" },
     { name: "Confirmados", value: stats.confirmedOrders, color: "#38bdf8" },
-    { name: "Preparando", value: stats.preparingOrders, color: "#f97316" },
-    { name: "Na entrega", value: stats.outForDeliveryOrders, color: "#8b5cf6" },
+    { name: "Preparando", value: stats.preparingOrders, color: "#fb923c" },
+    { name: "Na entrega", value: stats.outForDeliveryOrders, color: "#a78bfa" },
     { name: "Concluidos", value: stats.completedOrders, color: "#34d399" },
-    { name: "Cancelados", value: stats.cancelledOrders, color: "#ef4444" },
-  ].filter((item) => item.value > 0);
+    { name: "Cancelados", value: stats.cancelledOrders, color: "#f87171" },
+  ];
+
+  const totalOrders = STATUS_SEGMENTS.reduce((sum, s) => sum + s.value, 0);
+  const activeSegments = STATUS_SEGMENTS.filter((s) => s.value > 0);
+
+  const REVENUE_COLORS: Record<string, string> = {
+    Concluida: "#34d399",
+    Ativa: "#f59e0b",
+    Cancelada: "#f87171",
+  };
+
   const revenueData = [
-    { name: "Ativa", value: stats.activeRevenueNumber },
     { name: "Concluida", value: stats.completedRevenueNumber },
+    { name: "Ativa", value: stats.activeRevenueNumber },
     { name: "Cancelada", value: stats.cancelledRevenueNumber },
   ].filter((item) => item.value > 0);
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+    <div className="grid gap-4 lg:grid-cols-2">
+      {/* ── Order Distribution ── */}
       <article className="rounded-[2rem] border border-border/60 bg-surface-elevated p-5 shadow-sheet">
         <h3 className="font-display text-xl font-semibold">Distribuicao da fila</h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          Mostra onde os pedidos estao concentrados agora.
+          Proporção visual de cada etapa no fluxo de pedidos.
         </p>
-        <div className="mt-5 h-64">
-          {statusData.length > 0 ? (
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={statusData} dataKey="value" nameKey="name" innerRadius={58} outerRadius={92}>
-                  {statusData.map((entry) => (
-                    <Cell key={entry.name} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value) => [`${value} pedido(s)`, "Quantidade"]}
-                  contentStyle={chartTooltipStyle}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          ) : (
-            <EmptyChartState message="Sem pedidos no periodo selecionado." />
-          )}
-        </div>
-        <ChartLegend items={statusData.map((item) => ({ label: item.name, color: item.color }))} />
+
+        {totalOrders > 0 ? (
+          <>
+            {/* Stacked bar */}
+            <div className="mt-6 flex h-8 overflow-hidden rounded-full border border-border/40">
+              {activeSegments.map((seg) => (
+                <div
+                  key={seg.name}
+                  title={`${seg.name}: ${seg.value}`}
+                  className="relative flex items-center justify-center text-[10px] font-bold text-white transition-all duration-500"
+                  style={{
+                    width: `${(seg.value / totalOrders) * 100}%`,
+                    backgroundColor: seg.color,
+                    minWidth: seg.value > 0 ? "24px" : 0,
+                  }}
+                >
+                  {(seg.value / totalOrders) >= 0.08 && seg.value}
+                </div>
+              ))}
+            </div>
+
+            {/* Detail rows */}
+            <ul className="mt-5 space-y-2.5">
+              {STATUS_SEGMENTS.map((seg) => {
+                const pct = totalOrders > 0 ? ((seg.value / totalOrders) * 100).toFixed(0) : "0";
+                return (
+                  <li key={seg.name} className="flex items-center gap-3 text-sm">
+                    <span
+                      className="h-3 w-3 shrink-0 rounded-full"
+                      style={{ backgroundColor: seg.color }}
+                    />
+                    <span className="min-w-0 flex-1 truncate text-muted-foreground">{seg.name}</span>
+                    <span className="font-semibold tabular-nums text-foreground">{seg.value}</span>
+                    <span className="w-10 text-right text-xs text-muted-foreground/70">{pct}%</span>
+                  </li>
+                );
+              })}
+            </ul>
+
+            <p className="mt-4 text-right text-xs text-muted-foreground">
+              Total: <span className="font-semibold text-foreground">{totalOrders}</span> pedidos
+            </p>
+          </>
+        ) : (
+          <EmptyChartState message="Sem pedidos no periodo selecionado." />
+        )}
       </article>
 
+      {/* ── Revenue by Status ── */}
       <article className="rounded-[2rem] border border-border/60 bg-surface-elevated p-5 shadow-sheet">
         <h3 className="font-display text-xl font-semibold">Receita por situacao</h3>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -1299,27 +1337,56 @@ function DashboardCharts({ stats }: { stats: DashboardStats }) {
         <div className="mt-5 h-64">
           {revenueData.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={revenueData}>
-                <CartesianGrid stroke="rgba(255,255,255,0.08)" vertical={false} />
-                <XAxis dataKey="name" stroke="rgba(255,255,255,0.45)" tickLine={false} axisLine={false} />
+              <BarChart data={revenueData} barCategoryGap="28%">
+                <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
+                <XAxis
+                  dataKey="name"
+                  stroke="rgba(255,255,255,0.4)"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{ fontSize: 12 }}
+                />
                 <YAxis
-                  stroke="rgba(255,255,255,0.45)"
+                  stroke="rgba(255,255,255,0.4)"
                   tickLine={false}
                   axisLine={false}
                   tickFormatter={(value) => `R$ ${value}`}
-                  width={64}
+                  width={68}
+                  tick={{ fontSize: 11 }}
                 />
                 <Tooltip
                   formatter={(value) => [formatCurrency(Number(value)), "Receita"]}
                   contentStyle={chartTooltipStyle}
+                  cursor={{ fill: "rgba(255,255,255,0.04)" }}
                 />
-                <Bar dataKey="value" radius={[14, 14, 4, 4]} fill="#e24a2a" />
+                <Bar dataKey="value" radius={[12, 12, 4, 4]}>
+                  {revenueData.map((entry) => (
+                    <Cell key={entry.name} fill={REVENUE_COLORS[entry.name] ?? "#e24a2a"} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           ) : (
             <EmptyChartState message="Sem receita para analisar neste periodo." />
           )}
         </div>
+
+        {revenueData.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-3">
+            {revenueData.map((item) => (
+              <span
+                key={item.name}
+                className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/60 px-3 py-1 text-xs text-muted-foreground"
+              >
+                <span
+                  className="h-2 w-2 rounded-full"
+                  style={{ backgroundColor: REVENUE_COLORS[item.name] ?? "#e24a2a" }}
+                />
+                {item.name}: <span className="font-semibold text-foreground">{formatCurrency(item.value)}</span>
+              </span>
+            ))}
+          </div>
+        )}
       </article>
     </div>
   );
@@ -1329,26 +1396,6 @@ function EmptyChartState({ message }: { message: string }) {
   return (
     <div className="flex h-full items-center justify-center rounded-3xl border border-border/60 bg-background/50 px-5 text-center text-sm text-muted-foreground">
       {message}
-    </div>
-  );
-}
-
-function ChartLegend({ items }: { items: Array<{ label: string; color: string }> }) {
-  if (items.length === 0) {
-    return null;
-  }
-
-  return (
-    <div className="mt-4 flex flex-wrap gap-2">
-      {items.map((item) => (
-        <span
-          key={item.label}
-          className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/60 px-3 py-1 text-xs text-muted-foreground"
-        >
-          <span className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
-          {item.label}
-        </span>
-      ))}
     </div>
   );
 }
