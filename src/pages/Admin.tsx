@@ -267,7 +267,7 @@ export default function AdminPage() {
         dateTo: toDateInput(new Date()),
       }),
     enabled: Boolean(token) && activeView === "orders",
-    refetchInterval: 15000,
+    refetchInterval: 5000,
     refetchIntervalInBackground: true,
     retry: false,
   });

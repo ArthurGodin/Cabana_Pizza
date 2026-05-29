@@ -253,8 +253,7 @@ export function CartSheet({ open, onEditItem, onClose }: Props) {
       return;
     }
 
-    const whatsappWindow = shouldOpenWhatsAppInCurrentTab() ? null : window.open("about:blank", "_blank");
-
+    const isMobile = shouldOpenWhatsAppInCurrentTab();
     setSubmitting(true);
 
     try {
@@ -276,11 +275,9 @@ export function CartSheet({ open, onEditItem, onClose }: Props) {
       });
       const whatsappUrl = buildWhatsAppUrl(brand.whatsappNumber, message);
 
-      openWhatsAppOrderWindow({
-        targetWindow: whatsappWindow,
-        phone: brand.whatsappNumber,
-        message,
-      });
+      if (isMobile) {
+        window.location.href = whatsappUrl;
+      }
 
       setSubmittedOrder({
         reference: orderReference,
@@ -292,27 +289,25 @@ export function CartSheet({ open, onEditItem, onClose }: Props) {
         trackingUrl,
         loyalty: apiOrder.loyalty,
       });
-      toast.success(`Pedido ${orderReference} salvo na central e enviado para confirmacao.`);
+      toast.success(`Pedido ${orderReference} salvo na central.`);
       clear();
     } catch (error) {
       if (error instanceof OrderApiError && error.status === 409) {
-        whatsappWindow?.close();
         toast.error(error.message);
         return;
       }
 
       const message = buildWhatsAppMessage(orderPayload, formatBRL);
+      const whatsappUrl = buildWhatsAppUrl(brand.whatsappNumber, message);
 
-      openWhatsAppOrderWindow({
-        targetWindow: whatsappWindow,
-        phone: brand.whatsappNumber,
-        message,
-      });
+      if (isMobile) {
+        window.location.href = whatsappUrl;
+      }
 
       const detail =
         error instanceof Error ? error.message : "Nao foi possivel registrar o pedido na central.";
 
-      toast.error(`${detail} Abrimos o WhatsApp para a loja nao perder o pedido.`);
+      toast.error(`${detail} ${isMobile ? 'Abrimos o WhatsApp para não perder o pedido.' : 'Por favor, tente novamente.'}`);
     } finally {
       setSubmitting(false);
     }
@@ -786,8 +781,10 @@ function OrderSuccessState({ order }: { order: SubmittedOrderSummary }) {
 
         <h3 className="mt-5 font-display text-2xl font-semibold">Pedido salvo com sucesso</h3>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          O pedido de {order.customerName} ja entrou na central da Mesa 10. O WhatsApp da loja foi
-          aberto para voce concluir a confirmacao.
+          O pedido de {order.customerName} ja entrou na central da Mesa 10.
+          {shouldOpenWhatsAppInCurrentTab() 
+            ? " Se o seu WhatsApp nao abriu automaticamente, clique no botao abaixo para concluir a confirmacao." 
+            : " Clique no botao abaixo para enviar o pedido para o WhatsApp da loja e concluir a confirmacao."}
         </p>
 
         <div className="mt-6 space-y-3 rounded-3xl border border-border/60 bg-background/70 p-4 text-left">
@@ -974,24 +971,7 @@ function fieldClass(hasError: boolean, readOnly = false) {
   } ${readOnly ? "cursor-default bg-surface text-muted-foreground" : ""}`;
 }
 
-function openWhatsAppOrderWindow({
-  targetWindow,
-  phone,
-  message,
-}: {
-  targetWindow: Window | null;
-  phone: string;
-  message: string;
-}) {
-  const whatsappUrl = buildWhatsAppUrl(phone, message);
 
-  if (targetWindow && !targetWindow.closed) {
-    targetWindow.location.href = whatsappUrl;
-    return;
-  }
-
-  window.location.href = whatsappUrl;
-}
 
 function shouldOpenWhatsAppInCurrentTab() {
   return window.matchMedia("(pointer: coarse)").matches || window.innerWidth < 768;

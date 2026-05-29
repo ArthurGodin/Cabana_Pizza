@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
+import { VitePWA } from "vite-plugin-pwa";
 import path from "path";
 
 // https://vitejs.dev/config/
@@ -11,7 +12,28 @@ export default defineConfig({
       overlay: false,
     },
   },
-  plugins: [react()],
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: "autoUpdate",
+      includeAssets: ["favicon.svg"],
+      manifest: {
+        name: "Pizzaria Mesa 10",
+        short_name: "Mesa 10",
+        description: "A melhor pizza de Timon, agora online",
+        theme_color: "#100f0e",
+        background_color: "#100f0e",
+        display: "standalone",
+        icons: [
+          {
+            src: "favicon.svg",
+            sizes: "any",
+            type: "image/svg+xml",
+          },
+        ],
+      },
+    }),
+  ],
   build: {
     rollupOptions: {
       output: {
