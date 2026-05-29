@@ -19,7 +19,7 @@ import { toast } from "sonner";
 import { useMenuCatalog } from "@/contexts/menu-context";
 import { getDeliveryCoverage } from "@/lib/delivery-coverage";
 import { calculateDemoDeliveryFee } from "@/lib/delivery-fees";
-import { OrderApiError, getShortOrderReference, submitOrder, type LoyaltySummary } from "@/lib/order-api";
+import { OrderApiError, getShortOrderReference, submitOrder } from "@/lib/order-api";
 import { fetchPublicStoreStatus } from "@/lib/store-status-api";
 import {
   buildOrderPayload,
@@ -51,7 +51,6 @@ interface SubmittedOrderSummary {
   customerName: string;
   whatsappUrl: string;
   trackingUrl: string;
-  loyalty: LoyaltySummary | null;
 }
 
 export function CartSheet({ open, onEditItem, onClose }: Props) {
@@ -287,7 +286,6 @@ export function CartSheet({ open, onEditItem, onClose }: Props) {
         customerName: orderPayload.customer.name,
         whatsappUrl,
         trackingUrl,
-        loyalty: apiOrder.loyalty,
       });
       toast.success(`Pedido ${orderReference} salvo na central.`);
       clear();
@@ -821,7 +819,6 @@ function OrderSuccessState({ order }: { order: SubmittedOrderSummary }) {
           status e itens, sem expor endereco ou telefone.
         </div>
 
-        {order.loyalty ? <LoyaltyProgressCard loyalty={order.loyalty} /> : null}
 
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
           <a
@@ -844,30 +841,6 @@ function OrderSuccessState({ order }: { order: SubmittedOrderSummary }) {
   );
 }
 
-function LoyaltyProgressCard({ loyalty }: { loyalty: LoyaltySummary }) {
-  const percentage = Math.min(100, (loyalty.progressCount / 10) * 100);
-
-  return (
-    <div className="mt-5 rounded-2xl border border-emerald-500/25 bg-emerald-500/10 px-4 py-4 text-left">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-200">
-        Cartao fidelidade
-      </p>
-      {loyalty.availableRewards > 0 ? (
-        <p className="mt-2 text-sm text-emerald-50">
-          Este telefone tem {loyalty.availableRewards} pizza gratis disponivel para resgate na loja.
-        </p>
-      ) : (
-        <p className="mt-2 text-sm text-emerald-50">
-          {loyalty.progressCount}/10 pizzas contabilizadas. Faltam {loyalty.pizzasUntilNextReward} para
-          ganhar uma pizza gratis.
-        </p>
-      )}
-      <div className="mt-3 h-2 overflow-hidden rounded-full bg-background/70">
-        <div className="h-full rounded-full bg-emerald-300" style={{ width: `${percentage}%` }} />
-      </div>
-    </div>
-  );
-}
 
 function CoverageNotice({
   coverage,

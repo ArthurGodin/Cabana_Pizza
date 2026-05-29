@@ -87,7 +87,6 @@ import {
   type StoreStatus,
 } from "@/lib/admin-api";
 import { AdminCatalogPanel } from "@/components/admin/AdminCatalogPanel";
-import { AdminLoyaltyPanel } from "@/components/admin/AdminLoyaltyPanel";
 
 const ME_QUERY_KEY = ["admin", "me"];
 const ORDERS_QUERY_KEY = ["admin", "orders"];
@@ -192,7 +191,7 @@ export default function AdminPage() {
       >
     >
   >({});
-  const [activeView, setActiveView] = useState<"orders" | "catalog" | "loyalty">("orders");
+  const [activeView, setActiveView] = useState<"orders" | "catalog">("orders");
 
   const deferredSearch = useDeferredValue(searchInput.trim());
   const dateRange = useMemo<AdminOrdersDashboardFilters>(
@@ -623,16 +622,6 @@ export default function AdminPage() {
                   }`}
                 >
                   Cardapio
-                </button>
-                <button
-                  onClick={() => setActiveView("loyalty")}
-                  className={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
-                    activeView === "loyalty"
-                      ? "border-primary bg-primary/12 text-primary"
-                      : "border-border bg-surface text-muted-foreground hover:border-primary/50 hover:text-foreground"
-                  }`}
-                >
-                  Fidelidade
                 </button>
               </div>
             </div>
@@ -1121,10 +1110,8 @@ export default function AdminPage() {
                   </div>
                 </div>
               </>
-            ) : activeView === "catalog" ? (
-              <AdminCatalogPanel token={token as string} />
             ) : (
-              <AdminLoyaltyPanel token={token as string} />
+              <AdminCatalogPanel token={token as string} />
             )}
           </section>
         )}

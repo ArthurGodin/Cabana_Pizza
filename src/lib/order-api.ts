@@ -21,18 +21,6 @@ export interface OrderApiResponse {
   deliveryFee: string;
   total: string;
   createdAt: string;
-  loyalty: LoyaltySummary | null;
-}
-
-export interface LoyaltySummary {
-  customerPhone: string;
-  customerName: string | null;
-  qualifyingPizzas: number;
-  redeemedRewards: number;
-  earnedRewards: number;
-  availableRewards: number;
-  progressCount: number;
-  pizzasUntilNextReward: number;
 }
 
 export interface OrderTrackingResponse {
@@ -101,16 +89,6 @@ export async function fetchOrderTracking(publicId: string) {
   return (await response.json()) as OrderTrackingResponse;
 }
 
-export async function fetchLoyaltySummary(phone: string) {
-  const params = new URLSearchParams({ phone });
-  const response = await fetch(`${getApiBaseUrl()}/api/loyalty?${params.toString()}`);
-
-  if (!response.ok) {
-    throw new Error(await readOrderApiError(response));
-  }
-
-  return (await response.json()) as LoyaltySummary;
-}
 
 function isAbortError(error: unknown) {
   return error instanceof DOMException && error.name === "AbortError";

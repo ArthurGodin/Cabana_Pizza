@@ -132,25 +132,6 @@ export interface StoreStatusUpdateInput {
   pauseReason?: string | null;
 }
 
-export interface AdminLoyaltySummary {
-  customerPhone: string;
-  customerName: string | null;
-  qualifyingPizzas: number;
-  redeemedRewards: number;
-  earnedRewards: number;
-  availableRewards: number;
-  progressCount: number;
-  pizzasUntilNextReward: number;
-}
-
-export interface AdminLoyaltyRedemptionInput {
-  customerPhone: string;
-  customerName?: string | null;
-  pizzaName?: string | null;
-  orderId?: number | null;
-  note?: string | null;
-}
-
 export interface AdminOrdersDashboardFilters {
   dateFrom?: string;
   dateTo?: string;
@@ -378,38 +359,6 @@ export async function updateAdminStoreStatus(token: string, payload: StoreStatus
 
 export async function fetchAdminCatalog(token: string) {
   return adminFetch<AdminCatalogData>("/api/admin/catalog", token);
-}
-
-export async function fetchAdminLoyaltyCustomers(
-  token: string,
-  input: { search?: string; limit?: number } = {},
-) {
-  const params = new URLSearchParams();
-
-  if (input.search?.trim()) {
-    params.set("search", input.search.trim());
-  }
-
-  if (typeof input.limit === "number") {
-    params.set("limit", String(input.limit));
-  }
-
-  const query = params.toString();
-  const data = await adminFetch<{ customers: AdminLoyaltySummary[] }>(
-    `/api/admin/loyalty${query ? `?${query}` : ""}`,
-    token,
-  );
-  return data.customers;
-}
-
-export async function createAdminLoyaltyRedemption(
-  token: string,
-  input: AdminLoyaltyRedemptionInput,
-) {
-  return adminFetch<{ summary: AdminLoyaltySummary }>("/api/admin/loyalty/redemptions", token, {
-    method: "POST",
-    body: JSON.stringify(input),
-  });
 }
 
 export async function uploadAdminProductImage(token: string, file: File) {
