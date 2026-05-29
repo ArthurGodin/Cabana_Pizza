@@ -20,6 +20,7 @@ import { useMenuCatalog } from "@/contexts/menu-context";
 import { getDeliveryCoverage } from "@/lib/delivery-coverage";
 import { calculateDemoDeliveryFee } from "@/lib/delivery-fees";
 import { OrderApiError, getShortOrderReference, submitOrder } from "@/lib/order-api";
+import { saveOrderToHistory } from "@/lib/order-history";
 import { fetchPublicStoreStatus } from "@/lib/store-status-api";
 import {
   buildOrderPayload,
@@ -287,6 +288,14 @@ export function CartSheet({ open, onEditItem, onClose }: Props) {
         whatsappUrl,
         trackingUrl,
       });
+
+      saveOrderToHistory({
+        publicId: apiOrder.publicId,
+        customerName: orderPayload.customer.name,
+        totalLabel: formatBRL(Number(apiOrder.total)),
+        createdAt: apiOrder.createdAt,
+      });
+
       toast.success(`Pedido ${orderReference} salvo na central.`);
       clear();
     } catch (error) {

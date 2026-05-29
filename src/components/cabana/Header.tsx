@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ShoppingBag } from "lucide-react";
+import { ClipboardList, ShoppingBag } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useCart } from "@/store/cart";
 
 interface Props {
@@ -42,31 +43,41 @@ export function Header({ onCartClick }: Props) {
           </div>
         </a>
 
-        <motion.button
-          onClick={onCartClick}
-          aria-label="Abrir carrinho"
-          className="relative flex h-10 w-10 items-center justify-center rounded-full border border-border/60 bg-surface-elevated transition-colors hover:border-primary/60 md:h-11 md:w-11"
-          key={bump}
-          animate={bump > 0 ? { scale: [1, 1.12, 1] } : {}}
-          transition={{ duration: 0.45, ease: [0.34, 1.56, 0.64, 1] }}
-        >
-          <ShoppingBag className="h-[17px] w-[17px] text-foreground md:h-[18px] md:w-[18px]" strokeWidth={1.7} />
+        <div className="flex items-center gap-2">
+          <Link
+            to="/meus-pedidos"
+            aria-label="Meus pedidos"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-border/60 bg-surface-elevated transition-colors hover:border-primary/60 md:h-11 md:w-11"
+          >
+            <ClipboardList className="h-[17px] w-[17px] text-foreground md:h-[18px] md:w-[18px]" strokeWidth={1.7} />
+          </Link>
 
-          <AnimatePresence>
-            {count > 0 && (
-              <motion.span
-                key="badge"
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
-                transition={{ type: "spring", stiffness: 500, damping: 22 }}
-                className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground shadow-glow"
-              >
-                {count}
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </motion.button>
+          <motion.button
+            onClick={onCartClick}
+            aria-label="Abrir carrinho"
+            className="relative flex h-10 w-10 items-center justify-center rounded-full border border-border/60 bg-surface-elevated transition-colors hover:border-primary/60 md:h-11 md:w-11"
+            key={bump}
+            animate={bump > 0 ? { scale: [1, 1.12, 1] } : {}}
+            transition={{ duration: 0.45, ease: [0.34, 1.56, 0.64, 1] }}
+          >
+            <ShoppingBag className="h-[17px] w-[17px] text-foreground md:h-[18px] md:w-[18px]" strokeWidth={1.7} />
+
+            <AnimatePresence>
+              {count > 0 && (
+                <motion.span
+                  key="badge"
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 22 }}
+                  className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground shadow-glow"
+                >
+                  {count}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.button>
+        </div>
       </div>
     </header>
   );

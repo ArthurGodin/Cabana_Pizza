@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound.tsx";
 const queryClient = new QueryClient();
 const AdminPage = lazy(() => import("./pages/Admin.tsx"));
 const OrderTrackingPage = lazy(() => import("./pages/OrderTracking.tsx"));
+const MyOrdersPage = lazy(() => import("./pages/MyOrders.tsx"));
 
 function RouteFallback() {
   return (
@@ -34,6 +35,14 @@ const App = () => (
               element={
                 <Suspense fallback={<RouteFallback />}>
                   <OrderTrackingPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/meus-pedidos"
+              element={
+                <Suspense fallback={<RouteFallback />}>
+                  <MyOrdersPage />
                 </Suspense>
               }
             />
